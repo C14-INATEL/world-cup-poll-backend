@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "baseUrl": "src",
+    "paths": {
+      "@/*": [
+        "*"
+      ],
+    },
+  },
+  "ts-node": {
+    "files": true,
+  },
+  "files": [
+    "src/index.ts",
+    "src/types/fastify.d.ts"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "drizzle.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+}
