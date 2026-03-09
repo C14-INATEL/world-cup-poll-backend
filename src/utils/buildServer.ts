@@ -3,18 +3,18 @@ import { errorHandler } from '@/errors/error-handler'
 import { responseFormatter } from '@/hooks/response-formatter'
 
 const buildServer = () => {
-  const app = Fastify({
-    logger: true,
-  })
+	const app = Fastify({
+		logger: true,
+	})
 
-  app.setErrorHandler(errorHandler)
-  app.addHook('onSend', responseFormatter)
+	app.setErrorHandler(errorHandler)
+	app.addHook('onSend', responseFormatter)
 
-  app.get('/', (_, reply) => {
-    return reply.send({ message: 'Hello World' })
-  })
+	app.get('/', (_, reply) => {
+		return reply.send({ message: 'Hello World' })
+	})
 
-  return app
+	return app
 }
 
 export { buildServer }

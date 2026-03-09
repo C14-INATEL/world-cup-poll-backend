@@ -6,11 +6,9 @@
     "dev": "ts-node -r tsconfig-paths/register src/index.ts",
     "build": "tsc && tsc-alias",
     "start": "node ./dist/src/index.js",
-    "format": "biome format . --write"
+    "format": "biome format . --write",
+    "format:check": "biome format ."
   },
-  "pre-commit": [
-    "format"
-  ],
   "author": "joaolucenalima",
   "license": "ISC",
   "description": "",
@@ -22,7 +20,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.6",
-    "@fastify/pre-commit": "^2.2.1",
     "@types/node": "^25.4.0",
     "@types/pg": "^8.18.0",
     "drizzle-kit": "^0.31.9",
