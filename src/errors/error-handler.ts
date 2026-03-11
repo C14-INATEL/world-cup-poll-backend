@@ -1,5 +1,6 @@
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
 import { ZodError } from 'zod'
+import logger from '@/logger'
 
 export class BadRequestError extends Error {
 	statusCode = 400
@@ -43,14 +44,15 @@ type CustomError =
 
 export function errorHandler(
 	error: CustomError,
-	_: FastifyRequest,
+	request: FastifyRequest,
 	reply: FastifyReply,
 ) {
+	let status = 500
+	let message = 'Internal Server Error'
+
 	if (error instanceof ZodError) {
-		return reply.status(400).send({
-			error: error.issues[0].message,
-			data: null,
-		})
+		status = 400
+		message = error.issues[0].message
 	}
 
 	if (
@@ -59,14 +61,20 @@ export function errorHandler(
 		error instanceof NotFoundError ||
 		error instanceof InternalServerError
 	) {
-		return reply.status(error.statusCode).send({
-			error: error.message,
-			data: null,
-		})
+		status = error.statusCode
+		message = error.message
 	}
 
-	return reply.status(500).send({
-		error: 'Internal Server Error',
+	logger.error({
+		message: message,
+		stack: error.stack,
+		status,
+		url: request.originalUrl,
+		method: request.method,
+	})
+
+	return reply.status(status).send({
+		error: message,
 		data: null,
 	})
 }
