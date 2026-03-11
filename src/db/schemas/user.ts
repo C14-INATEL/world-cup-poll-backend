@@ -7,4 +7,5 @@ export const userTable = pgTable('user', {
 	passwordHash: varchar({ length: 255 }).notNull(),
 })
 
-export type InsertUserType = typeof userTable.$inferInsert
+export type UserType = typeof userTable.$inferSelect
+export type UserTypeInsert = typeof userTable.$inferInsert

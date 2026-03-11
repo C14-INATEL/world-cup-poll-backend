@@ -1,9 +1,48 @@
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
 import { ZodError } from 'zod'
-import { ApiError } from './api-error'
+
+export class BadRequestError extends Error {
+	statusCode = 400
+	constructor(message = 'Bad Request') {
+		super(message)
+		this.name = 'BadRequestError'
+	}
+}
+
+export class UnauthorizedError extends Error {
+	statusCode = 401
+	constructor(message = 'Unauthorized') {
+		super(message)
+		this.name = 'UnauthorizedError'
+	}
+}
+
+export class NotFoundError extends Error {
+	statusCode = 404
+	constructor(message = 'Not Found') {
+		super(message)
+		this.name = 'NotFoundError'
+	}
+}
+
+export class InternalServerError extends Error {
+	statusCode = 500
+	constructor(message = 'Internal Server Error') {
+		super(message)
+		this.name = 'InternalServerError'
+	}
+}
+
+type CustomError =
+	| BadRequestError
+	| UnauthorizedError
+	| NotFoundError
+	| InternalServerError
+	| FastifyError
+	| Error
 
 export function errorHandler(
-	error: FastifyError | Error,
+	error: CustomError,
 	_: FastifyRequest,
 	reply: FastifyReply,
 ) {
@@ -14,7 +53,12 @@ export function errorHandler(
 		})
 	}
 
-	if (error instanceof ApiError) {
+	if (
+		error instanceof BadRequestError ||
+		error instanceof UnauthorizedError ||
+		error instanceof NotFoundError ||
+		error instanceof InternalServerError
+	) {
 		return reply.status(error.statusCode).send({
 			error: error.message,
 			data: null,
@@ -22,7 +66,7 @@ export function errorHandler(
 	}
 
 	return reply.status(500).send({
-		error: 'Erro interno no servidor',
+		error: 'Internal Server Error',
 		data: null,
 	})
 }

@@ -8,6 +8,13 @@
       "when": 1773245559920,
       "tag": "0000_create-initial-tables",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773252460228,
+      "tag": "0001_add-user-session-table",
+      "breakpoints": true
     }
   ]
 }
