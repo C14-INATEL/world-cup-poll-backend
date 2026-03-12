@@ -1,4 +1,4 @@
-import { UserSession, UserSessionInsert } from '@/db/schemas/user_sessions'
+import { UserSession, UserSessionInsert } from '@/db/schemas'
 
 export interface SessionRepositoryInterface {
 	create(session: UserSessionInsert): Promise<UserSession>

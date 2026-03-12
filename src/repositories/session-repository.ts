@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 import { db } from '@/db'
-import { UserSessionInsert, userSessionsTable } from '@/db/schemas/user_sessions'
+import { UserSessionInsert, userSessionsTable } from '@/db/schemas'
 import { SessionRepositoryInterface } from './interfaces/session-interface'
 
 export class SessionRepository implements SessionRepositoryInterface {
