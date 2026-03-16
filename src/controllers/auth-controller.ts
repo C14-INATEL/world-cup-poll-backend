@@ -1,9 +1,14 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import z from 'zod'
 import { AuthService } from '@/services/auth.service'
+import { NotFoundError } from '@/errors/error-handler'
+import { UserService } from '@/services/user.service'
 
 export class AuthController {
-	constructor(private readonly authService: AuthService) {}
+	constructor(
+		private readonly authService: AuthService,
+		private readonly userService: UserService,
+	) {}
 
 	async register(request: FastifyRequest, reply: FastifyReply) {
 		const registerSchema = z.object({
@@ -54,5 +59,25 @@ export class AuthController {
 			name: user.name,
 			email: user.email,
 		})
+	}
+
+	async me(request: FastifyRequest, reply: FastifyReply) {
+		const user = await this.userService.findUserById(request.userId!)
+
+		if (!user) {
+			throw new NotFoundError('Usuário não encontrado')
+		}
+
+		return reply.status(200).send({
+			id: user.id,
+			name: user.name,
+			email: user.email,
+		})
+	}
+
+	async logout(_: FastifyRequest, reply: FastifyReply) {
+		reply.clearCookie('session_id', { path: '/' })
+
+		return reply.status(200).send({ message: 'Logout realizado' })
 	}
 }

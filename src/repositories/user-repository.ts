@@ -12,6 +12,15 @@ export class UserRepository implements UserRepositoryInterface {
 			.then((res) => res[0])
 	}
 
+	async findById(id: string) {
+		return db
+			.select()
+			.from(userTable)
+			.where(eq(userTable.id, id))
+			.limit(1)
+			.then((res) => res[0])
+	}
+
 	async findByEmail(email: string) {
 		return db
 			.select()

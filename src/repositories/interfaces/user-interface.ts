@@ -2,6 +2,7 @@ import { UserType, UserTypeInsert } from '@/db/schemas'
 
 export interface UserRepositoryInterface {
 	create(data: UserTypeInsert): Promise<UserType>
+	findById(id: string): Promise<UserType>
 	findByEmail(email: string): Promise<UserType>
 	findByEmailAndPassword({
 		email,
