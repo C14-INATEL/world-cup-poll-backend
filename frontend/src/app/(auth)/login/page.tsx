@@ -1,0 +1,85 @@
+'use client'
+
+import { FormEvent, useState } from 'react'
+import Link from 'next/link'
+import { useAuth } from '@/hooks/useAuth'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { ApiError } from '@/lib/api'
+
+export default function LoginPage() {
+  const { login } = useAuth()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    try {
+      await login(email, password)
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message)
+      } else {
+        setError('Erro ao fazer login. Tente novamente.')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <div>
+        <h1 className="text-xl font-bold text-text-primary">
+          Entrar
+        </h1>
+        <p className="mt-1 text-sm text-text-secondary">
+          Acesse sua conta para gerenciar seus bolões
+        </p>
+      </div>
+
+      {error && (
+        <div className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+          {error}
+        </div>
+      )}
+
+      <Input
+        label="E-mail"
+        type="email"
+        placeholder="seu@email.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+
+      <Input
+        label="Senha"
+        type="password"
+        placeholder="Sua senha"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+
+      <Button type="submit" loading={loading} className="mt-2 w-full">
+        Entrar
+      </Button>
+
+      <p className="text-center text-sm text-text-secondary">
+        Não tem conta?{' '}
+        <Link
+          href="/register"
+          className="font-medium text-accent-blue hover:underline"
+        >
+          Cadastre-se
+        </Link>
+      </p>
+    </form>
+  )
+}
