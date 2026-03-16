@@ -42,13 +42,13 @@ docker compose up -d
 npx drizzle-kit migrate
 ```
 
-5. Inicie o servidor em modo de desenvolvimento (porta 3000) - Backend:
+5. Inicie o servidor em modo de desenvolvimento (porta 3333) - Backend:
 
 ```
 npm run dev
 ```
 
-6. Inicie o servidor em outro terminal (porta 3333) - Frontend:
+6. Inicie o servidor em outro terminal (porta 3000) - Frontend:
 
 ```
 cd frontend
