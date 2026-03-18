@@ -7,7 +7,8 @@
     "build": "tsc && tsc-alias",
     "start": "node ./dist/src/index.js",
     "format": "biome format . --write",
-    "format:check": "biome format ."
+    "format:check": "biome format .",
+    "generate-migration": "drizzle-kit generate --name"
   },
   "author": "joaolucenalima",
   "license": "ISC",

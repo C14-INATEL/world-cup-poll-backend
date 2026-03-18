@@ -3,6 +3,7 @@ import Fastify from 'fastify'
 import { errorHandler } from '@/errors/error-handler'
 import { responseFormatter } from '@/hooks/response-formatter'
 import { AuthRoutes } from '@/routes/auth-route'
+import { InviteRoutes } from '@/routes/invite-route'
 import { PollRoutes } from '@/routes/poll-route'
 
 const buildServer = () => {
@@ -23,6 +24,7 @@ const buildServer = () => {
 
 	app.register(AuthRoutes)
 	app.register(PollRoutes)
+	app.register(InviteRoutes)
 
 	return app
 }

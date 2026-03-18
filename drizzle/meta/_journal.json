@@ -15,6 +15,13 @@
       "when": 1773252460228,
       "tag": "0001_add-user-session-table",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773853402046,
+      "tag": "0002_add-invite-table",
+      "breakpoints": true
     }
   ]
 }
