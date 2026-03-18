@@ -37,4 +37,8 @@ export class AuthService {
 
 		return { user, session }
 	}
+
+	async logout(sessionId: string) {
+		await this.sessionService.deleteSession(sessionId)
+	}
 }

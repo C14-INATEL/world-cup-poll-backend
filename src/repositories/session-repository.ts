@@ -25,7 +25,9 @@ export class SessionRepository implements SessionRepositoryInterface {
 			.then((res) => res[0])
 	}
 
-	async delete(id: string) {
-		return db.delete(userSessionsTable).where(eq(userSessionsTable.id, id))
+	async delete(tokenId: string) {
+		return db
+			.delete(userSessionsTable)
+			.where(eq(userSessionsTable.sessionToken, tokenId))
 	}
 }

@@ -55,4 +55,14 @@ export class AuthController {
 			email: user.email,
 		})
 	}
+
+	async logout(request: FastifyRequest, reply: FastifyReply) {
+		if (request.cookies['session_id']) {
+			await this.authService.logout(request.cookies['session_id'])
+		}
+
+		reply.clearCookie('session_id', { path: '/' })
+
+		return reply.status(204).send()
+	}
 }
