@@ -11,3 +11,6 @@ export const participantTable = pgTable('participant', {
 		.notNull()
 		.references(() => userTable.id),
 })
+
+export type Participant = typeof participantTable.$inferSelect
+export type ParticipantInsert = typeof participantTable.$inferInsert

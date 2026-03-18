@@ -1,6 +1,8 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { makeSessionService } from '@/services/factories/make-session-service'
 
+const sessionService = makeSessionService()
+
 export async function authMiddleware(request: FastifyRequest, reply: FastifyReply) {
 	const sessionId = request.cookies.session_id
 
@@ -9,8 +11,6 @@ export async function authMiddleware(request: FastifyRequest, reply: FastifyRepl
 			message: 'Não autenticado',
 		})
 	}
-
-	const sessionService = makeSessionService()
 
 	const session = await sessionService.validateSession(sessionId)
 

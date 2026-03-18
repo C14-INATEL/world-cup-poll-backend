@@ -3,6 +3,7 @@ import Fastify from 'fastify'
 import { errorHandler } from '@/errors/error-handler'
 import { responseFormatter } from '@/hooks/response-formatter'
 import { AuthRoutes } from '@/routes/auth-route'
+import { PollRoutes } from '@/routes/poll-route'
 
 const buildServer = () => {
 	const app = Fastify({
@@ -14,11 +15,14 @@ const buildServer = () => {
 	app.setErrorHandler(errorHandler)
 	app.addHook('onSend', responseFormatter)
 
+	app.decorateRequest('userId', '')
+
 	app.get('/', (_, reply) => {
 		return reply.send({ message: 'Hello World' })
 	})
 
 	app.register(AuthRoutes)
+	app.register(PollRoutes)
 
 	return app
 }

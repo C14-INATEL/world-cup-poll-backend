@@ -10,3 +10,6 @@ export const pollTable = pgTable('poll', {
 		.notNull()
 		.references(() => userTable.id),
 })
+
+export type Poll = typeof pollTable.$inferSelect
+export type PollInsert = typeof pollTable.$inferInsert
