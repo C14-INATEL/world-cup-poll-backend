@@ -25,4 +25,8 @@ export class SessionService {
 
 		return session
 	}
+
+	async deleteSession(sessionToken: string) {
+		await this.sessionRepository.delete(sessionToken)
+	}
 }

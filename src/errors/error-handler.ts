@@ -52,7 +52,7 @@ export function errorHandler(
 
 	if (error instanceof ZodError) {
 		status = 400
-		message = error.issues[0].message
+		message = error.issues.map((issue) => issue.message).join('; ')
 	}
 
 	if (
