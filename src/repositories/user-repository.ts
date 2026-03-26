@@ -1,11 +1,12 @@
 import { and, eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { UserTypeInsert, userTable } from '@/db/schemas'
+import { DbExecutor } from '@/db/unit-of-work'
 import { UserRepositoryInterface } from './interfaces/user-interface'
 
 export class UserRepository implements UserRepositoryInterface {
-	async create(data: UserTypeInsert) {
-		return db
+	async create(data: UserTypeInsert, executor: DbExecutor = db) {
+		return executor
 			.insert(userTable)
 			.values(data)
 			.returning()

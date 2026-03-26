@@ -1,3 +1,4 @@
+import { UnitOfWork } from '@/db/unit-of-work'
 import { UnauthorizedError } from '@/errors/error-handler'
 import { compareHashPassword } from '@/utils/password'
 import { SessionService } from './session.service'
@@ -7,6 +8,7 @@ export class AuthService {
 	constructor(
 		private userService: UserService,
 		private sessionService: SessionService,
+		private unitOfWork: UnitOfWork,
 	) {}
 
 	async login(data: { email: string; password: string }) {
@@ -31,11 +33,12 @@ export class AuthService {
 	}
 
 	async register(data: { email: string; password: string; name: string }) {
-		const user = await this.userService.createUser(data)
+		return this.unitOfWork.execute(async (trx) => {
+			const user = await this.userService.createUser(data, trx)
+			const session = await this.sessionService.createSession(user.id, trx)
 
-		const session = await this.sessionService.createSession(user.id)
-
-		return { user, session }
+			return { user, session }
+		})
 	}
 
 	async logout(sessionId: string) {

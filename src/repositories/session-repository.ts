@@ -1,11 +1,15 @@
 import { eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { UserSessionInsert, userSessionsTable } from '@/db/schemas'
+import { DbExecutor } from '@/db/unit-of-work'
 import { SessionRepositoryInterface } from './interfaces/session-interface'
 
 export class SessionRepository implements SessionRepositoryInterface {
-	async create({ userId, sessionToken, expiresAt }: UserSessionInsert) {
-		return db
+	async create(
+		{ userId, sessionToken, expiresAt }: UserSessionInsert,
+		executor: DbExecutor = db,
+	) {
+		return executor
 			.insert(userSessionsTable)
 			.values({
 				userId,
@@ -25,8 +29,8 @@ export class SessionRepository implements SessionRepositoryInterface {
 			.then((res) => res[0])
 	}
 
-	async delete(tokenId: string) {
-		return db
+	async delete(tokenId: string, executor: DbExecutor = db) {
+		await executor
 			.delete(userSessionsTable)
 			.where(eq(userSessionsTable.sessionToken, tokenId))
 	}

@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { ParticipantInsert, participantTable, userTable } from '@/db/schemas'
+import { DbExecutor } from '@/db/unit-of-work'
 import { ParticipantRepositoryInterface } from './interfaces/participant-interface'
 
 export class ParticipantRepository implements ParticipantRepositoryInterface {
@@ -24,8 +25,8 @@ export class ParticipantRepository implements ParticipantRepositoryInterface {
 			.where(eq(participantTable.pollId, pollId))
 	}
 
-	async add(data: ParticipantInsert) {
-		return db
+	async add(data: ParticipantInsert, executor: DbExecutor = db) {
+		return executor
 			.insert(participantTable)
 			.values(data)
 			.returning()

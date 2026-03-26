@@ -1,15 +1,19 @@
 import { randomUUID } from 'crypto'
+import { DbExecutor } from '@/db/unit-of-work'
 import { UnauthorizedError } from '@/errors/error-handler'
 import { SessionRepository } from '@/repositories/session-repository'
 
 export class SessionService {
 	constructor(private sessionRepository: SessionRepository) {}
 
-	async createSession(userId: string) {
+	async createSession(userId: string, executor?: DbExecutor) {
 		const sessionToken = randomUUID()
 		const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
 
-		return await this.sessionRepository.create({ userId, sessionToken, expiresAt })
+		return await this.sessionRepository.create(
+			{ userId, sessionToken, expiresAt },
+			executor,
+		)
 	}
 
 	async validateSession(sessionToken: string) {
@@ -26,7 +30,7 @@ export class SessionService {
 		return session
 	}
 
-	async deleteSession(sessionToken: string) {
-		await this.sessionRepository.delete(sessionToken)
+	async deleteSession(sessionToken: string, executor?: DbExecutor) {
+		await this.sessionRepository.delete(sessionToken, executor)
 	}
 }

@@ -1,9 +1,18 @@
 import { Invite, InviteInsert, InviteStatus } from '@/db/schemas/invite'
+import { DbExecutor } from '@/db/unit-of-work'
 
 export interface InviteRepositoryInterface {
-	createInvite(invite: InviteInsert): Promise<Invite>
-	findInviteById(id: string): Promise<Invite | null>
+	createInvite(invite: InviteInsert, executor?: DbExecutor): Promise<Invite>
+	findInviteById(id: string, executor?: DbExecutor): Promise<Invite | null>
 	findInvitesByUserId(userId: string): Promise<Invite[]>
-	findExistentInvite(userId: string, pollId: string): Promise<Invite>
-	updateInviteStatus(id: string, status: InviteStatus): Promise<Invite>
+	findExistentInvite(
+		userId: string,
+		pollId: string,
+		executor?: DbExecutor,
+	): Promise<Invite | null>
+	updateInviteStatus(
+		id: string,
+		status: InviteStatus,
+		executor?: DbExecutor,
+	): Promise<Invite | null>
 }
