@@ -8,7 +8,8 @@
     "start": "node ./dist/src/index.js",
     "format": "biome check . --fix",
     "format:check": "biome check .",
-    "generate-migration": "drizzle-kit generate --name"
+    "generate-migration": "drizzle-kit generate --name",
+    "seed:games": "tsx src/scripts/seed-games.ts"
   },
   "author": "joaolucenalima",
   "license": "ISC",
