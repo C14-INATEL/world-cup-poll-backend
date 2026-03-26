@@ -1,4 +1,4 @@
-import { BadRequestError, UnauthorizedError } from '@/errors/error-handler'
+import { UnauthorizedError } from '@/errors/error-handler'
 import { compareHashPassword } from '@/utils/password'
 import { SessionService } from './session.service'
 import { UserService } from './user.service'
