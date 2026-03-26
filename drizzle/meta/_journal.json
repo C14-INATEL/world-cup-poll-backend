@@ -22,6 +22,13 @@
       "when": 1773853402046,
       "tag": "0002_add-invite-table",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1774527661146,
+      "tag": "0003_add-properties-to-game-table",
+      "breakpoints": true
     }
   ]
 }

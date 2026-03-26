@@ -6,8 +6,8 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc && tsc-alias",
     "start": "node ./dist/src/index.js",
-    "format": "biome format . --write",
-    "format:check": "biome format .",
+    "format": "biome check . --fix",
+    "format:check": "biome check .",
     "generate-migration": "drizzle-kit generate --name"
   },
   "author": "joaolucenalima",
@@ -20,6 +20,7 @@
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
     "fastify": "^5.8.2",
+    "node-cron": "^4.2.1",
     "pg": "^8.20.0",
     "winston": "^3.19.0"
   },
