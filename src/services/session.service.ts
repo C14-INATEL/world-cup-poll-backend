@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto'
+import { isBefore } from 'date-fns'
 import { DbExecutor } from '@/db/unit-of-work'
 import { UnauthorizedError } from '@/errors/error-handler'
 import { SessionRepository } from '@/repositories/session-repository'
@@ -23,7 +24,7 @@ export class SessionService {
 			throw new UnauthorizedError('Session not found')
 		}
 
-		if (session.expiresAt < new Date()) {
+		if (isBefore(session.expiresAt, new Date())) {
 			throw new UnauthorizedError('Session expired')
 		}
 

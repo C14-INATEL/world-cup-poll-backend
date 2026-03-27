@@ -5,7 +5,7 @@ import { env } from '@/utils/env'
 
 type MatchesApiResponse = {
 	id: number
-	utcDate: string
+	utcDate: Date
 	status: string
 	matchday: number
 	stage: string
@@ -71,7 +71,7 @@ export async function getAllMatchesFromApiJob() {
 	for (const match of data.matches) {
 		const game: GameInsert = {
 			apiId: match.id,
-			date: new Date(match.utcDate),
+			date: match.utcDate,
 			firstTeamCountryCode: match.homeTeam.tla,
 			secondTeamCountryCode: match.awayTeam.tla || '',
 			firstTeamGoals: match.score.fullTime.home

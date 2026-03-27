@@ -1,3 +1,4 @@
+import { isBefore } from 'date-fns'
 import { InviteInsert, InviteStatus } from '@/db/schemas/invite'
 import { UnitOfWork } from '@/db/unit-of-work'
 import { BadRequestError } from '@/errors/error-handler'
@@ -39,15 +40,19 @@ export class InviteService {
 				throw new BadRequestError('Convite não encontrado')
 			}
 
-			if (invite.expiresAt < new Date()) {
+			if (isBefore(invite.expiresAt, new Date())) {
 				throw new BadRequestError(
 					'Convite expirado. Solicite um novo convite para participar do bolão.',
 				)
 			}
 
+			if (invite.status !== 'pending') {
+				throw new BadRequestError('Convite já foi respondido')
+			}
+
 			if (invite.invitedUserId !== userId) {
 				throw new BadRequestError(
-					'Você não tem permissão para responder a este convite',
+					'Erro ao atualizar status do convite. Usuário não autorizado para responder a este convite.',
 				)
 			}
 

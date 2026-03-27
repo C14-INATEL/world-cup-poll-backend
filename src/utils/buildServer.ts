@@ -7,6 +7,7 @@ import { responseFormatter } from '@/hooks/response-formatter'
 import { getAllMatchesFromApiJob } from '@/jobs/get-games.job'
 import { AuthRoutes } from '@/routes/auth-route'
 import { GamesRoutes } from '@/routes/game-route'
+import { GuessRoutes } from '@/routes/guess-route'
 import { InviteRoutes } from '@/routes/invite-route'
 import { PollRoutes } from '@/routes/poll-route'
 import { env } from './env'
@@ -35,6 +36,7 @@ const buildServer = () => {
 	app.register(InviteRoutes)
 	app.register(PollRoutes)
 	app.register(GamesRoutes)
+	app.register(GuessRoutes)
 
 	cron.schedule('0 0 * * *', async () => {
 		await getAllMatchesFromApiJob()

@@ -1,15 +1,36 @@
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { ParticipantInsert, participantTable, userTable } from '@/db/schemas'
 import { DbExecutor } from '@/db/unit-of-work'
 import { ParticipantRepositoryInterface } from './interfaces/participant-interface'
 
 export class ParticipantRepository implements ParticipantRepositoryInterface {
+	async findById(id: string) {
+		return db
+			.select()
+			.from(participantTable)
+			.where(eq(participantTable.id, id))
+			.then((res) => res[0] || null)
+	}
+
 	async findByUserId(userId: string) {
 		return db
 			.select()
 			.from(participantTable)
 			.where(eq(participantTable.userId, userId))
+			.then((res) => res[0] || null)
+	}
+
+	async findByUserIdAndPollId(userId: string, pollId: string) {
+		return db
+			.select()
+			.from(participantTable)
+			.where(
+				and(
+					eq(participantTable.userId, userId),
+					eq(participantTable.pollId, pollId),
+				),
+			)
 			.then((res) => res[0] || null)
 	}
 

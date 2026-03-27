@@ -1,6 +1,7 @@
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
 import { ZodError } from 'zod'
 import logger from '@/logger'
+import { isUniqueConstraintError } from './unique-constraint-error'
 
 export class BadRequestError extends Error {
 	statusCode = 400
@@ -63,6 +64,11 @@ export function errorHandler(
 	) {
 		status = error.statusCode
 		message = error.message
+	}
+
+	if (isUniqueConstraintError(error)) {
+		status = 400
+		message = 'Registro duplicado'
 	}
 
 	logger.error({

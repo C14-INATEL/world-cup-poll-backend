@@ -1,4 +1,4 @@
-import { and, eq, gt } from 'drizzle-orm'
+import { and, eq, gt, sql } from 'drizzle-orm'
 import { db } from '@/db'
 import { InviteInsert, InviteStatus, inviteTable } from '@/db/schemas/invite'
 import { DbExecutor } from '@/db/unit-of-work'
@@ -37,7 +37,7 @@ export class InviteRepository implements InviteRepositoryInterface {
 				and(
 					eq(inviteTable.invitedUserId, userId),
 					eq(inviteTable.pollId, pollId),
-					gt(inviteTable.expiresAt, new Date()),
+					gt(inviteTable.expiresAt, sql`NOW()`),
 					eq(inviteTable.status, 'pending'),
 				),
 			)
@@ -52,7 +52,7 @@ export class InviteRepository implements InviteRepositoryInterface {
 		return executor
 			.update(inviteTable)
 			.set({ status })
-			.where(and(eq(inviteTable.id, id), gt(inviteTable.expiresAt, new Date())))
+			.where(and(eq(inviteTable.id, id), gt(inviteTable.expiresAt, sql`NOW()`)))
 			.returning()
 			.then((res) => res[0] ?? null)
 	}
