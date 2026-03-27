@@ -41,7 +41,11 @@ export class InviteController {
 
 		const { status } = bodySchema.parse(request.body)
 
-		const invite = await this.inviteService.updateInviteStatus(id, status)
+		const invite = await this.inviteService.updateInviteStatus(
+			id,
+			status,
+			request.userId,
+		)
 
 		reply.status(200).send(invite)
 	}

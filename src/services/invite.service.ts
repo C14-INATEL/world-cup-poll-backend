@@ -31,7 +31,7 @@ export class InviteService {
 		return this.inviteRepository.findInvitesByUserId(userId)
 	}
 
-	async updateInviteStatus(id: string, status: InviteStatus) {
+	async updateInviteStatus(id: string, status: InviteStatus, userId: string) {
 		return this.unitOfWork.execute(async (trx) => {
 			const invite = await this.inviteRepository.findInviteById(id, trx)
 
@@ -45,15 +45,17 @@ export class InviteService {
 				)
 			}
 
+			if (invite.invitedUserId !== userId) {
+				throw new BadRequestError(
+					'Você não tem permissão para responder a este convite',
+				)
+			}
+
 			const updatedInvite = await this.inviteRepository.updateInviteStatus(
 				id,
 				status,
 				trx,
 			)
-
-			if (!updatedInvite) {
-				throw new BadRequestError('Não foi possível atualizar o convite')
-			}
 
 			if (updatedInvite.status === 'accepted') {
 				await this.participantRepository.add(
