@@ -29,6 +29,13 @@
       "when": 1774527661146,
       "tag": "0003_add-properties-to-game-table",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1774620012634,
+      "tag": "0004_add-unique-constraints",
+      "breakpoints": true
     }
   ]
 }
