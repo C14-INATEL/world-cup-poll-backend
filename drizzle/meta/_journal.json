@@ -36,6 +36,13 @@
       "when": 1774620012634,
       "tag": "0004_add-unique-constraints",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1774622486803,
+      "tag": "0005_add-timezone-to-timestamp-fields",
+      "breakpoints": true
     }
   ]
 }

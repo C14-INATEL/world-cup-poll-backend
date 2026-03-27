@@ -20,8 +20,8 @@ export const inviteTable = pgTable('invite', {
 		.notNull()
 		.references(() => userTable.id),
 	status: inviteStatusEnum().notNull().default('pending'),
-	expiresAt: timestamp().notNull(),
-	createdAt: timestamp().notNull().defaultNow(),
+	expiresAt: timestamp({ withTimezone: true }).notNull(),
+	createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 })
 
 export type Invite = typeof inviteTable.$inferSelect

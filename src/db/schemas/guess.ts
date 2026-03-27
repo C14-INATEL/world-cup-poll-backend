@@ -8,7 +8,7 @@ export const guessTable = pgTable(
 		id: uuid().primaryKey().defaultRandom(),
 		firstTeamPoints: integer().notNull(),
 		secondTeamPoints: integer().notNull(),
-		createdAt: timestamp().defaultNow().notNull(),
+		createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
 		gameId: uuid()
 			.notNull()
 			.references(() => gameTable.id),
