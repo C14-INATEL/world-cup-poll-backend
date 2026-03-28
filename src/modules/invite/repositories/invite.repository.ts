@@ -1,0 +1,59 @@
+import { and, eq, gt, sql } from 'drizzle-orm'
+import { InviteRepositoryInterface } from '@/modules/invite/repositories/invite.interface'
+import { db } from '@/shared/db'
+import { InviteInsert, InviteStatus, inviteTable } from '@/shared/db/schemas/invite'
+import { DbExecutor } from '@/shared/db/unit-of-work'
+
+export class InviteRepository implements InviteRepositoryInterface {
+	async createInvite(invite: InviteInsert, executor: DbExecutor = db) {
+		return executor
+			.insert(inviteTable)
+			.values(invite)
+			.returning()
+			.then((res) => res[0])
+	}
+
+	async findInviteById(id: string, executor: DbExecutor = db) {
+		return executor
+			.select()
+			.from(inviteTable)
+			.where(eq(inviteTable.id, id))
+			.then((res) => res[0] ?? null)
+	}
+
+	async findInvitesByUserId(userId: string) {
+		return db.select().from(inviteTable).where(eq(inviteTable.invitedUserId, userId))
+	}
+
+	async findExistentInvite(
+		userId: string,
+		pollId: string,
+		executor: DbExecutor = db,
+	) {
+		return executor
+			.select()
+			.from(inviteTable)
+			.where(
+				and(
+					eq(inviteTable.invitedUserId, userId),
+					eq(inviteTable.pollId, pollId),
+					gt(inviteTable.expiresAt, sql`NOW()`),
+					eq(inviteTable.status, 'pending'),
+				),
+			)
+			.then((res) => res[0] ?? null)
+	}
+
+	async updateInviteStatus(
+		id: string,
+		status: InviteStatus,
+		executor: DbExecutor = db,
+	) {
+		return executor
+			.update(inviteTable)
+			.set({ status })
+			.where(and(eq(inviteTable.id, id), gt(inviteTable.expiresAt, sql`NOW()`)))
+			.returning()
+			.then((res) => res[0] ?? null)
+	}
+}

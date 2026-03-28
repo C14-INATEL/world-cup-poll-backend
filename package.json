@@ -1,11 +1,11 @@
 {
   "name": "world-cup-poll-backend",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "main": "src/server.ts",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/server.ts",
     "build": "tsc && tsc-alias",
-    "start": "node ./dist/src/index.js",
+    "start": "node ./dist/src/server.js",
     "format": "biome check . --fix",
     "format:check": "biome check .",
     "generate-migration": "drizzle-kit generate --name",

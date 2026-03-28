@@ -22,6 +22,8 @@ npm install
 ```
 DATABASE_URL=postgresql://postgres:example@localhost:5432/database
 PORT=3000
+FRONTEND_URL=http://localhost:5173
+FOOTBALL_API_KEY=your_api_key_here
 ```
 
 Ou copie o arquivo `.env.example` para `.env` e edite as variáveis conforme necessário:
@@ -50,13 +52,15 @@ npm run dev
 
 ### Scripts disponíveis
 
-| Script             | Descricao                                  |
-| ------------------ | ------------------------------------------ |
-| `npm run dev`      | Inicia o servidor em modo de desenvolvimento |
-| `npm run build`    | Compila o projeto TypeScript para JavaScript |
-| `npm start`        | Inicia o servidor a partir do build compilado |
-| `npm run format`   | Formata o código com Biome                   |
+| Script | Descrição |
+| --- | --- |
+| `npm run dev` | Inicia o servidor em modo de desenvolvimento |
+| `npm run build` | Compila o projeto TypeScript para JavaScript |
+| `npm start` | Inicia o servidor a partir do build compilado |
+| `npm run format` | Formata o código com Biome |
 | `npm run format:check` | Verifica a formatação sem alterar arquivos |
+| `npm run generate-migration` | Gera uma nova migration (com `--name`) |
+| `npm run seed:games` | Executa seed/job para atualizar jogos via API |
 
 ---
 
@@ -64,28 +68,44 @@ npm run dev
 
 ```
 src/
-  controllers/       # Camada que recebe as requisições HTTP, valida os dados de entrada e chama os services
-  db/
-    schemas/         # Definição das tabelas do banco de dados usando Drizzle ORM
-    index.ts         # Instancia da conexão com o banco de dados
-  errors/            # Classes de erro customizadas (BadRequest, Unauthorized, NotFound, etc.) e error handler global
-  hooks/             # Hooks do Fastify (ex: formatador padrao de resposta)
-  middlewares/       # Middlewares de autenticacao e outros
-  repositories/
-    interfaces/      # Interfaces que definem o contrato dos repositorios
-    *.ts             # Implementações concretas que acessam o banco de dados via Drizzle
-  routes/            # Definição das rotas da aplicação
-  services/
-    factories/       # Funções factory que montam os services com suas dependências
-    *.service.ts     # Camada de regras de negócio
-  types/             # Definicoes de tipos e extensoes de tipos (ex: fastify.d.ts)
-  utils/             # Utilitarios gerais (env, password hashing, build do servidor)
-  logger.ts          # Configuracao do logger Winston
-  index.ts           # Ponto de entrada da aplicação
-drizzle/             # Arquivos de migration SQL gerados pelo Drizzle Kit
+  modules/
+    auth/
+    game/
+    guess/
+    invite/
+    poll/
+    session/
+    user/
+    participant/
+
+  shared/
+    db/
+      schemas/
+    middlewares/
+    errors/
+    hooks/
+    jobs/
+    utils/
+    types/
+
+  config/
+  app.ts
+  server.ts
+  logger.ts
+drizzle/              # Arquivos de migration SQL gerados pelo Drizzle Kit
 ```
 
-A arquitetura segue o padrão de camadas: **Routes -> Controllers -> Services -> Repositories -> Banco de dados**. Cada camada tem uma responsabilidade clara e se comunica apenas com a camada imediatamente abaixo.
+A arquitetura segue um padrão feature-first com camadas por módulo:
+
+**Routes -> Controllers -> Services -> Repositories -> Banco de dados**
+
+As responsabilidades compartilhadas (db, middlewares, errors, hooks, jobs, utils e types) ficam em `src/shared`, enquanto cada domínio de negócio fica em `src/modules/<feature>`.
+
+O bootstrap da aplicação está separado em:
+
+- `src/app.ts`: montagem do Fastify (plugins, hooks, rotas, cron)
+- `src/server.ts`: ponto de entrada da aplicação (listen e tratamento de erros globais)
+- `src/config/index.ts`: leitura e validação de variáveis de ambiente
 
 ---
 
@@ -104,7 +124,7 @@ export class AuthService {
 }
 ```
 
-A montagem dessas dependências acontece nas funções factory dentro de `src/services/factories/`. Cada factory é responsável por instanciar o repositório correto e injetá-lo no service correspondente:
+A montagem dessas dependências acontece nas funções factory dentro de cada módulo, por exemplo `src/modules/auth/make-auth.service.ts`:
 
 ```ts
 export function makeAuthService() {
@@ -118,7 +138,7 @@ export function makeAuthService() {
 
 Quando as dependências são injetadas pelo construtor, podemos substituir qualquer uma delas por uma implementação falsa (mock) durante os testes. Isso permite testar cada camada de forma isolada, sem depender do banco de dados real ou de serviços externos.
 
-Os repositórios possuem interfaces definidas em `src/repositories/interfaces/`. Na hora de testar, basta criar um objeto que implemente a mesma interface e passá-lo no construtor:
+Os repositórios possuem interfaces co-localizadas dentro dos módulos (por exemplo `src/modules/user/user.interface.ts`). Na hora de testar, basta criar um objeto que implemente a mesma interface e passá-lo no construtor:
 
 ```ts
 const mockUserRepository = {
@@ -140,7 +160,7 @@ Dessa forma:
 
 ## Geração e execução de migrations
 
-O projeto usa o Drizzle Kit para gerar e executar migrations a partir dos schemas definidos em `src/db/schemas/`.
+O projeto usa o Drizzle Kit para gerar e executar migrations a partir dos schemas definidos em `src/shared/db/schemas/`.
 
 ### Gerar uma nova migration
 
@@ -158,6 +178,12 @@ Você também pode dar um nome customizado para a migration:
 npx drizzle-kit generate --name=nome-da-migration
 ```
 
+Ou via script com nome customizado:
+
+```
+npm run generate-migration -- --name=nome-da-migration
+```
+
 ### Aplicar as migrations no banco
 
 Para executar todas as migrations pendentes no banco de dados:
@@ -168,13 +194,13 @@ npx drizzle-kit migrate
 
 ### Configuração
 
-A configuração do Drizzle Kit está no arquivo `drizzle.config.ts` na raiz do projeto. Ele aponta para os schemas em `./src/db/schemas` e gera as migrations na pasta `./drizzle`.
+A configuração do Drizzle Kit está no arquivo `drizzle.config.ts` na raiz do projeto. Ele aponta para os schemas em `./src/shared/db/schemas` e gera as migrations na pasta `./drizzle`.
 
 ---
 
 ## Estrutura do banco de dados
 
-O banco de dados PostgreSQL possui 6 tabelas. Todas utilizam UUID como chave primária com geração automática.
+O banco de dados PostgreSQL possui 7 tabelas. Todas utilizam UUID como chave primária com geração automática.
 
 ### Tabela `user`
 
@@ -192,6 +218,10 @@ Representa um bolão criado por um usuário.
 
 Associa um usuário a um bolão. Um usuário pode participar de vários bolões.
 
+### Tabela `invite`
+
+Armazena convites de participação em bolões com status (`pending`, `accepted`, `declined`) e data de expiração.
+
 ### Tabela `game`
 
 Representa uma partida entre duas seleções.
@@ -200,6 +230,13 @@ Representa uma partida entre duas seleções.
 
 Armazena os palpites dos participantes para cada partida.
 
+## Regras de unicidade importantes
+
+- `participant`: combinação única entre `userId` e `pollId`
+- `guess`: combinação única entre `participantId` e `gameId`
+- `poll`: `code` único
+- `user`: `email` único
+
 ### Relacionamentos
 
 ```
@@ -207,5 +244,8 @@ user 1---N user_sessions    (um usuário pode ter várias sessões)
 user 1---N poll             (um usuário pode criar vários bolões)
 user 1---N participant      (um usuário pode participar de vários bolões)
 poll 1---N participant      (um bolão pode ter vários participantes)
+poll 1---N invite           (um bolão pode ter vários convites)
+user 1---N invite           (um usuário pode receber e enviar convites)
 game 1---N guess            (uma partida pode ter vários palpites)
+participant 1---N guess     (um participante pode ter vários palpites)
 ```

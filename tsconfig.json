@@ -13,7 +13,7 @@
       "@/*": ["src/*"],
     },
   },
-  "files": ["src/index.ts", "src/types/fastify.d.ts"],
+  "files": ["src/server.ts", "src/shared/types/fastify.d.ts"],
   "include": ["src/**/*.ts", "src/**/*.d.ts", "drizzle.config.ts"],
   "exclude": ["node_modules", "dist"],
 }
