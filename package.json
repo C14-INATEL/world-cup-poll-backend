@@ -9,7 +9,9 @@
     "format": "biome check . --fix",
     "format:check": "biome check .",
     "generate-migration": "drizzle-kit generate --name",
-    "seed:games": "tsx src/scripts/seed-games.ts"
+    "seed:games": "tsx src/scripts/seed-games.ts",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "author": "joaolucenalima",
   "license": "ISC",
@@ -30,10 +32,12 @@
     "@biomejs/biome": "2.4.6",
     "@types/node": "^25.4.0",
     "@types/pg": "^8.18.0",
+    "@vitest/coverage-v8": "^4.1.2",
     "drizzle-kit": "^0.31.9",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.19.0",
     "typescript": "^5.9.3",
+    "vitest": "^4.1.2",
     "zod": "^4.3.6"
   }
 }
