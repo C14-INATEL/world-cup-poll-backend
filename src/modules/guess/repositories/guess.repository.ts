@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm'
-import { db } from '@/shared/db'
-import { GuessInsert, guessTable } from '@/shared/db/schemas'
+import { db } from '@/infrastructure/db'
+import { GuessInsert, guessTable } from '@/infrastructure/db/schemas'
 import { GuessRepositoryInterface } from './guess.interface'
 
 export class GuessRepository implements GuessRepositoryInterface {

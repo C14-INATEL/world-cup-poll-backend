@@ -1,5 +1,5 @@
-import { UserType, UserTypeInsert } from '@/shared/db/schemas'
-import { DbExecutor } from '@/shared/db/unit-of-work'
+import { UserType, UserTypeInsert } from '@/infrastructure/db/schemas'
+import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 
 export interface UserRepositoryInterface {
 	create(data: UserTypeInsert, executor?: DbExecutor): Promise<UserType>

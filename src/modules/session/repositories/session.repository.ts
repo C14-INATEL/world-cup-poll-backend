@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
-import { db } from '@/shared/db'
-import { UserSessionInsert, userSessionsTable } from '@/shared/db/schemas'
-import { DbExecutor } from '@/shared/db/unit-of-work'
+import { db } from '@/infrastructure/db'
+import { UserSessionInsert, userSessionsTable } from '@/infrastructure/db/schemas'
+import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 import { SessionRepositoryInterface } from './session.interface'
 
 export class SessionRepository implements SessionRepositoryInterface {

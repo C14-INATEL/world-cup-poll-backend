@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
+import { authMiddleware } from '@/core/middlewares/auth-middleware'
 import { InviteController } from '@/modules/invite/invite.controller'
 import { makeInviteService } from '@/modules/invite/services/make-invite.service'
-import { authMiddleware } from '@/shared/middlewares/auth-middleware'
 
 const inviteService = makeInviteService()
 const inviteController = new InviteController(inviteService)

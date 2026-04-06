@@ -1,13 +1,13 @@
 import { isBefore } from 'date-fns'
-import { GameRepository } from '@/modules/game/repositories/game.repository'
-import { GuessRepository } from '@/modules/guess/repositories/guess.repository'
-import { ParticipantRepository } from '@/modules/participant/repositories/participant.repository'
-import { GuessInsert } from '@/shared/db/schemas'
 import {
 	BadRequestError,
 	NotFoundError,
 	UnauthorizedError,
-} from '@/shared/errors/error-handler'
+} from '@/core/errors/error-handler'
+import { GuessInsert } from '@/infrastructure/db/schemas'
+import { GameRepository } from '@/modules/game/repositories/game.repository'
+import { GuessRepository } from '@/modules/guess/repositories/guess.repository'
+import { ParticipantRepository } from '@/modules/participant/repositories/participant.repository'
 
 export class GuessService {
 	constructor(

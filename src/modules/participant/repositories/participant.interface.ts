@@ -1,5 +1,5 @@
-import { Participant, ParticipantInsert } from '@/shared/db/schemas'
-import { DbExecutor } from '@/shared/db/unit-of-work'
+import { Participant, ParticipantInsert } from '@/infrastructure/db/schemas'
+import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 
 export interface ParticipantRepositoryInterface {
 	findById(id: string): Promise<Participant | null>

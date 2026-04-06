@@ -1,4 +1,4 @@
-import { Game, GameInsert } from '@/shared/db/schemas'
+import { Game, GameInsert } from '@/infrastructure/db/schemas'
 
 export interface GameRepositoryInterface {
 	findAll(): Promise<Game[]>

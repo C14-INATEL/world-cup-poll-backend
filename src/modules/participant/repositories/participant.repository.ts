@@ -1,7 +1,11 @@
 import { and, eq } from 'drizzle-orm'
-import { db } from '@/shared/db'
-import { ParticipantInsert, participantTable, userTable } from '@/shared/db/schemas'
-import { DbExecutor } from '@/shared/db/unit-of-work'
+import { db } from '@/infrastructure/db'
+import {
+	ParticipantInsert,
+	participantTable,
+	userTable,
+} from '@/infrastructure/db/schemas'
+import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 import { ParticipantRepositoryInterface } from './participant.interface'
 
 export class ParticipantRepository implements ParticipantRepositoryInterface {

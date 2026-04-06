@@ -1,6 +1,6 @@
+import { hashPassword } from '@/core/utils/password'
+import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 import { UserRepository } from '@/modules/user/repositories/user.repository'
-import { DbExecutor } from '@/shared/db/unit-of-work'
-import { hashPassword } from '@/shared/utils/password'
 
 export class UserService {
 	constructor(private userRepository: UserRepository) {}

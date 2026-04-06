@@ -1,5 +1,5 @@
 import { buildApp } from '@/app'
-import { env } from '@/config'
+import { env } from '@/config/env'
 
 process.on('uncaughtException', (err) => {
 	console.error('Uncaught Exception:', err)

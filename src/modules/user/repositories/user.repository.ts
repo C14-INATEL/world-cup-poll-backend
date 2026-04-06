@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm'
-import { db } from '@/shared/db'
-import { UserTypeInsert, userTable } from '@/shared/db/schemas'
-import { DbExecutor } from '@/shared/db/unit-of-work'
+import { db } from '@/infrastructure/db'
+import { UserTypeInsert, userTable } from '@/infrastructure/db/schemas'
+import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 import { UserRepositoryInterface } from './user.interface'
 
 export class UserRepository implements UserRepositoryInterface {

@@ -68,30 +68,37 @@ npm run dev
 
 ```
 src/
+  config/
+    env.ts
+  core/
+    errors/
+    middlewares/
+    types/
+    utils/
+  infrastructure/
+    db/
+      schemas/
+      index.ts
+      unit-of-work.ts
+    jobs/
   modules/
     auth/
     game/
     guess/
     invite/
+    participant/
     poll/
     session/
     user/
-    participant/
-
-  shared/
-    db/
-      schemas/
-    middlewares/
-    errors/
-    hooks/
-    jobs/
-    utils/
-    types/
-
-  config/
   app.ts
   server.ts
   logger.ts
+scripts/
+  seed-games.ts
+test/
+  factories/
+  mocks/
+  unit/
 drizzle/              # Arquivos de migration SQL gerados pelo Drizzle Kit
 ```
 
@@ -99,13 +106,13 @@ A arquitetura segue um padrão feature-first com camadas por módulo:
 
 **Routes -> Controllers -> Services -> Repositories -> Banco de dados**
 
-As responsabilidades compartilhadas (db, middlewares, errors, hooks, jobs, utils e types) ficam em `src/shared`, enquanto cada domínio de negócio fica em `src/modules/<feature>`.
+As responsabilidades compartilhadas de domínio técnico ficam distribuídas entre `src/core` (middlewares, errors, types e utils) e `src/infrastructure` (db e jobs), enquanto cada domínio de negócio fica em `src/modules/<feature>`.
 
 O bootstrap da aplicação está separado em:
 
 - `src/app.ts`: montagem do Fastify (plugins, hooks, rotas, cron)
 - `src/server.ts`: ponto de entrada da aplicação (listen e tratamento de erros globais)
-- `src/config/index.ts`: leitura e validação de variáveis de ambiente
+- `src/config/env.ts`: leitura e validação de variáveis de ambiente
 
 ---
 
@@ -124,7 +131,7 @@ export class AuthService {
 }
 ```
 
-A montagem dessas dependências acontece nas funções factory dentro de cada módulo, por exemplo `src/modules/auth/make-auth.service.ts`:
+A montagem dessas dependências acontece nas funções factory dentro de cada módulo, por exemplo `src/modules/auth/services/make-auth.service.ts`:
 
 ```ts
 export function makeAuthService() {
@@ -138,7 +145,7 @@ export function makeAuthService() {
 
 Quando as dependências são injetadas pelo construtor, podemos substituir qualquer uma delas por uma implementação falsa (mock) durante os testes. Isso permite testar cada camada de forma isolada, sem depender do banco de dados real ou de serviços externos.
 
-Os repositórios possuem interfaces co-localizadas dentro dos módulos (por exemplo `src/modules/user/user.interface.ts`). Na hora de testar, basta criar um objeto que implemente a mesma interface e passá-lo no construtor:
+Os repositórios possuem interfaces co-localizadas dentro dos módulos (por exemplo `src/modules/user/repositories/user.interface.ts`). Na hora de testar, basta criar um objeto que implemente a mesma interface e passá-lo no construtor:
 
 ```ts
 const mockUserRepository = {
@@ -160,7 +167,7 @@ Dessa forma:
 
 ## Geração e execução de migrations
 
-O projeto usa o Drizzle Kit para gerar e executar migrations a partir dos schemas definidos em `src/shared/db/schemas/`.
+O projeto usa o Drizzle Kit para gerar e executar migrations a partir dos schemas definidos em `src/infrastructure/db/schemas/`.
 
 ### Gerar uma nova migration
 
@@ -194,7 +201,7 @@ npx drizzle-kit migrate
 
 ### Configuração
 
-A configuração do Drizzle Kit está no arquivo `drizzle.config.ts` na raiz do projeto. Ele aponta para os schemas em `./src/shared/db/schemas` e gera as migrations na pasta `./drizzle`.
+A configuração do Drizzle Kit está no arquivo `drizzle.config.ts` na raiz do projeto. Ele aponta para os schemas em `./src/infrastructure/db/schemas` e gera as migrations na pasta `./drizzle`.
 
 ---
 

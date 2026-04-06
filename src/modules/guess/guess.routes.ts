@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
+import { authMiddleware } from '@/core/middlewares/auth-middleware'
 import { GuessController } from '@/modules/guess/guess.controller'
 import { makeGuessService } from '@/modules/guess/services/make-guess.service'
-import { authMiddleware } from '@/shared/middlewares/auth-middleware'
 
 const guessController = new GuessController(makeGuessService())
 

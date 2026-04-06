@@ -1,5 +1,5 @@
+import { GameInsert } from '@/infrastructure/db/schemas'
 import { GameRepository } from '@/modules/game/repositories/game.repository'
-import { GameInsert } from '@/shared/db/schemas'
 
 export class GameService {
 	constructor(private gameRepository: GameRepository) {}

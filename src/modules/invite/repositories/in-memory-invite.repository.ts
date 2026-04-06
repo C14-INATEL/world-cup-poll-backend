@@ -1,5 +1,9 @@
 import { randomUUID } from 'crypto'
-import { Invite, InviteInsert, InviteStatus } from '@/shared/db/schemas/invite'
+import {
+	Invite,
+	InviteInsert,
+	InviteStatus,
+} from '@/infrastructure/db/schemas/invite'
 
 export class InMemoryInviteRepository {
 	private invites: Invite[] = []

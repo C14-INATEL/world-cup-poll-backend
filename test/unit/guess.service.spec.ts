@@ -1,13 +1,13 @@
-import { makeGame } from '@test/factories/game/make-game'
-import { makeGuess } from '@test/factories/guess/make-guess'
-import { makeParticipant } from '@test/factories/participant/make-participant'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import {
 	BadRequestError,
 	NotFoundError,
 	UnauthorizedError,
-} from '@/shared/errors/error-handler'
-import { GuessService } from './guess.service'
+} from '@/core/errors/error-handler'
+import { GuessService } from '@/modules/guess/services/guess.service'
+import { makeGame } from '../factories/game/make-game'
+import { makeGuess } from '../factories/guess/make-guess'
+import { makeParticipant } from '../factories/participant/make-participant'
 
 describe('GuessService', () => {
 	beforeEach(() => {
@@ -23,7 +23,7 @@ describe('GuessService', () => {
 			const participantRepository = {
 				findByUserIdAndPollId: vi.fn().mockResolvedValue(null),
 			}
- 
+
 			const service = new GuessService(
 				{} as any,
 				{} as any,
@@ -79,7 +79,9 @@ describe('GuessService', () => {
 			const gameRepository = {
 				findById: vi
 					.fn()
-					.mockResolvedValue(makeGame({ date: new Date('2026-06-01T10:00:00.000Z') })),
+					.mockResolvedValue(
+						makeGame({ date: new Date('2026-06-01T10:00:00.000Z') }),
+					),
 			}
 
 			const service = new GuessService(
@@ -109,7 +111,9 @@ describe('GuessService', () => {
 			}
 
 			const guessRepository = {
-				create: vi.fn().mockResolvedValue(makeGuess({ participantId: 'participant-99' })),
+				create: vi
+					.fn()
+					.mockResolvedValue(makeGuess({ participantId: 'participant-99' })),
 			}
 
 			const service = new GuessService(
@@ -250,7 +254,9 @@ describe('GuessService', () => {
 			const gameRepository = {
 				findById: vi
 					.fn()
-					.mockResolvedValue(makeGame({ date: new Date('2026-06-01T10:00:00.000Z') })),
+					.mockResolvedValue(
+						makeGame({ date: new Date('2026-06-01T10:00:00.000Z') }),
+					),
 			}
 
 			const service = new GuessService(

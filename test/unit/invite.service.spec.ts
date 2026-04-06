@@ -1,9 +1,9 @@
-import { makeInvite } from '@test/factories/invite/make-invite'
-import { UnitOfWorkMock } from '@test/mocks/unit-of-work.mock'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { BadRequestError } from '@/shared/errors/error-handler'
-import { InMemoryInviteRepository } from '../repositories/in-memory-invite.repository'
-import { InviteService } from './invite.service'
+import { BadRequestError } from '@/core/errors/error-handler'
+import { InMemoryInviteRepository } from '@/modules/invite/repositories/in-memory-invite.repository'
+import { InviteService } from '@/modules/invite/services/invite.service'
+import { makeInvite } from '../factories/invite/make-invite'
+import { UnitOfWorkMock } from '../mocks/unit-of-work.mock'
 
 describe('InviteService', () => {
 	beforeEach(() => {

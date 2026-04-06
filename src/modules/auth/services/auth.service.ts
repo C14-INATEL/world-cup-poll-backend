@@ -1,8 +1,8 @@
+import { UnauthorizedError } from '@/core/errors/error-handler'
+import { compareHashPassword } from '@/core/utils/password'
+import { UnitOfWork } from '@/infrastructure/db/unit-of-work'
 import { SessionService } from '@/modules/session/services/session.service'
 import { UserService } from '@/modules/user/services/user.service'
-import { UnitOfWork } from '@/shared/db/unit-of-work'
-import { UnauthorizedError } from '@/shared/errors/error-handler'
-import { compareHashPassword } from '@/shared/utils/password'
 
 export class AuthService {
 	constructor(

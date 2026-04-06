@@ -1,6 +1,6 @@
+import { UnitOfWork } from '@/infrastructure/db/unit-of-work'
 import { makeSessionService } from '@/modules/session/services/make-session.service'
 import { makeUserService } from '@/modules/user/services/make-user.service'
-import { UnitOfWork } from '@/shared/db/unit-of-work'
 import { AuthService } from './auth.service'
 
 export function makeAuthService() {

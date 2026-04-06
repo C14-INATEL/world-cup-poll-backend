@@ -4,7 +4,7 @@
   "main": "src/server.ts",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc && tsc-alias",
+    "build": "tsc -p tsconfig.build.json && tsc-alias",
     "start": "node ./dist/src/server.js",
     "format": "biome check . --fix",
     "format:check": "biome check .",

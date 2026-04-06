@@ -1,11 +1,11 @@
 import { and, count, eq, exists, isNotNull, or } from 'drizzle-orm'
-import { db } from '@/shared/db'
+import { db } from '@/infrastructure/db'
 import {
 	PollInsert,
 	participantTable,
 	pollTable,
 	userTable,
-} from '@/shared/db/schemas'
+} from '@/infrastructure/db/schemas'
 import { PollRepositoryInterface } from './poll.interface'
 
 export class PollRepository implements PollRepositoryInterface {

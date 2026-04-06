@@ -1,4 +1,4 @@
-import { db } from '@/shared/db'
+import { db } from '@/infrastructure/db'
 
 export type DbExecutor = Pick<typeof db, 'select' | 'insert' | 'update' | 'delete'>
 

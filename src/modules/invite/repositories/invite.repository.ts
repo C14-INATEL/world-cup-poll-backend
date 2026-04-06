@@ -1,8 +1,12 @@
 import { and, eq, gt, sql } from 'drizzle-orm'
+import { db } from '@/infrastructure/db'
+import {
+	InviteInsert,
+	InviteStatus,
+	inviteTable,
+} from '@/infrastructure/db/schemas/invite'
+import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 import { InviteRepositoryInterface } from '@/modules/invite/repositories/invite.interface'
-import { db } from '@/shared/db'
-import { InviteInsert, InviteStatus, inviteTable } from '@/shared/db/schemas/invite'
-import { DbExecutor } from '@/shared/db/unit-of-work'
 
 export class InviteRepository implements InviteRepositoryInterface {
 	async createInvite(invite: InviteInsert, executor: DbExecutor = db) {

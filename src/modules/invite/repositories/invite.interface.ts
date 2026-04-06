@@ -1,5 +1,9 @@
-import { Invite, InviteInsert, InviteStatus } from '@/shared/db/schemas/invite'
-import { DbExecutor } from '@/shared/db/unit-of-work'
+import {
+	Invite,
+	InviteInsert,
+	InviteStatus,
+} from '@/infrastructure/db/schemas/invite'
+import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 
 export interface InviteRepositoryInterface {
 	createInvite(invite: InviteInsert, executor?: DbExecutor): Promise<Invite>

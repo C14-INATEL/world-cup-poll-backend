@@ -1,8 +1,8 @@
 import { randomUUID } from 'crypto'
 import { isBefore } from 'date-fns'
+import { UnauthorizedError } from '@/core/errors/error-handler'
+import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 import { SessionRepository } from '@/modules/session/repositories/session.repository'
-import { DbExecutor } from '@/shared/db/unit-of-work'
-import { UnauthorizedError } from '@/shared/errors/error-handler'
 
 export class SessionService {
 	constructor(private sessionRepository: SessionRepository) {}

@@ -1,4 +1,4 @@
-import { Guess, GuessInsert } from '@/shared/db/schemas'
+import { Guess, GuessInsert } from '@/infrastructure/db/schemas'
 
 export interface GuessRepositoryInterface {
 	findAll(): Promise<Guess[]>

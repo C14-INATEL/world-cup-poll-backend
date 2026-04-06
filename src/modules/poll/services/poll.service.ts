@@ -1,6 +1,6 @@
+import { BadRequestError, NotFoundError } from '@/core/errors/error-handler'
+import { PollInsert } from '@/infrastructure/db/schemas'
 import { PollRepository } from '@/modules/poll/repositories/poll.repository'
-import { PollInsert } from '@/shared/db/schemas'
-import { BadRequestError, NotFoundError } from '@/shared/errors/error-handler'
 
 export class PollService {
 	constructor(private readonly pollRepository: PollRepository) {}

@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
+import { authMiddleware } from '@/core/middlewares/auth-middleware'
 import { GameController } from '@/modules/game/game.controller'
 import { makeGameService } from '@/modules/game/services/make-game.service'
-import { authMiddleware } from '@/shared/middlewares/auth-middleware'
 
 const gameService = makeGameService()
 const gameController = new GameController(gameService)

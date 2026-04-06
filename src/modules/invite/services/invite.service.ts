@@ -1,9 +1,9 @@
 import { isBefore } from 'date-fns'
+import { BadRequestError } from '@/core/errors/error-handler'
+import { InviteInsert, InviteStatus } from '@/infrastructure/db/schemas/invite'
+import { UnitOfWork } from '@/infrastructure/db/unit-of-work'
 import { InviteRepository } from '@/modules/invite/repositories/invite.repository'
 import { ParticipantRepository } from '@/modules/participant/repositories/participant.repository'
-import { InviteInsert, InviteStatus } from '@/shared/db/schemas/invite'
-import { UnitOfWork } from '@/shared/db/unit-of-work'
-import { BadRequestError } from '@/shared/errors/error-handler'
 
 export class InviteService {
 	constructor(

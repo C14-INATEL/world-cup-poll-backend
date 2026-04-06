@@ -1,4 +1,4 @@
-import { Poll, PollInsert } from '@/shared/db/schemas'
+import { Poll, PollInsert } from '@/infrastructure/db/schemas'
 
 type PollDetails = Poll & {
 	participantsCount: number

@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
-import { db } from '@/shared/db'
-import { GameInsert, gameTable } from '@/shared/db/schemas'
+import { db } from '@/infrastructure/db'
+import { GameInsert, gameTable } from '@/infrastructure/db/schemas'
 import { GameRepositoryInterface } from './game.interface'
 
 export class GameRepository implements GameRepositoryInterface {
