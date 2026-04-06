@@ -1,6 +1,6 @@
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
 import { ZodError } from 'zod'
-import logger from '@/logger'
+import logger from '@/config/logger'
 import { isUniqueConstraintError } from './unique-constraint-error'
 
 export class BadRequestError extends Error {

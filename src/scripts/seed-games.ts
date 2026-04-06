@@ -1,5 +1,5 @@
+import logger from '@/config/logger'
 import { getAllMatchesFromApiJob } from '@/infrastructure/jobs/get-games.job'
-import logger from '@/logger'
 
 async function main() {
 	logger.info('[SEED] Starting games seed by calling getAllMatchesFromApiJob')

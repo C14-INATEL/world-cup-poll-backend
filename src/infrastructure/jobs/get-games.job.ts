@@ -1,5 +1,5 @@
 import { env } from '@/config/env'
-import logger from '@/logger'
+import logger from '@/config/logger'
 import { makeGameService } from '@/modules/game/services/make-game.service'
 import { GameInsert } from '../db/schemas'
 
