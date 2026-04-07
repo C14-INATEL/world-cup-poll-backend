@@ -24,4 +24,8 @@ export class UserService {
 	async findUserByEmail(email: string) {
 		return await this.userRepository.findByEmail(email)
 	}
+
+	async findUserById(id: string) {
+		return await this.userRepository.findById(id)
+	}
 }

@@ -8,7 +8,9 @@ export class PollController {
 	async create(request: FastifyRequest, reply: FastifyReply) {
 		const bodySchema = z.object({
 			title: z.string().min(1, 'O título é obrigatório'),
-			code: z.string().length(10, 'Tamanho mínimo do código é 10 caracteres'),
+			code: z
+				.string({ error: 'Código do bolão é obrigatório' })
+				.length(10, 'Tamanho mínimo do código é 10 caracteres'),
 		})
 
 		const { title, code } = bodySchema.parse(request.body)

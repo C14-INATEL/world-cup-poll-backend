@@ -9,3 +9,5 @@ export const userTable = pgTable('user', {
 
 export type UserType = typeof userTable.$inferSelect
 export type UserTypeInsert = typeof userTable.$inferInsert
+
+export type UserPublicData = Omit<UserType, 'passwordHash'>

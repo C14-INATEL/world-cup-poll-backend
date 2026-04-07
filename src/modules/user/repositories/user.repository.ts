@@ -9,7 +9,11 @@ export class UserRepository implements UserRepositoryInterface {
 		return executor
 			.insert(userTable)
 			.values(data)
-			.returning()
+			.returning({
+				id: userTable.id,
+				name: userTable.name,
+				email: userTable.email,
+			})
 			.then((res) => res[0])
 	}
 
@@ -30,9 +34,26 @@ export class UserRepository implements UserRepositoryInterface {
 		password: string
 	}) {
 		return db
-			.select()
+			.select({
+				id: userTable.id,
+				name: userTable.name,
+				email: userTable.email,
+			})
 			.from(userTable)
 			.where(and(eq(userTable.email, email), eq(userTable.passwordHash, password)))
+			.limit(1)
+			.then((res) => res[0])
+	}
+
+	async findById(id: string) {
+		return db
+			.select({
+				id: userTable.id,
+				name: userTable.name,
+				email: userTable.email,
+			})
+			.from(userTable)
+			.where(eq(userTable.id, id))
 			.limit(1)
 			.then((res) => res[0])
 	}

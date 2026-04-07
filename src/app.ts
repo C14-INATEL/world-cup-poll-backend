@@ -11,6 +11,7 @@ import { GamesRoutes } from '@/modules/game/game.routes'
 import { GuessRoutes } from '@/modules/guess/guess.routes'
 import { InviteRoutes } from '@/modules/invite/invite.routes'
 import { PollRoutes } from '@/modules/poll/poll.routes'
+import { UserRoutes } from '@/modules/user/user.routes'
 
 const buildApp = () => {
 	const app = Fastify({
@@ -33,6 +34,7 @@ const buildApp = () => {
 	})
 
 	app.register(AuthRoutes, { prefix: '/auth' })
+	app.register(UserRoutes)
 	app.register(InviteRoutes)
 	app.register(PollRoutes)
 	app.register(GamesRoutes)
