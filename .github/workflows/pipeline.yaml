@@ -108,22 +108,40 @@ jobs:
           retention-days: 7
 
 
+  # Secrets necessários no repositório:
+  #   MAIL_SERVER   → ex: smtp.gmail.com
+  #   MAIL_USERNAME → seu e-mail
+  #   MAIL_PASSWORD → senha de app do Gmail
+  #   MAIL_TO       → destinatário
+  
   notification:
     name: Notification
     needs: coverage
     runs-on: ubuntu-latest
+    if: always()
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Send e-mail notification
+        uses: dawidd6/action-send-mail@v3
         with:
-          node-version: '22'
-          cache: 'npm'
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          to: ${{ secrets.MAIL_TO }}
+          from: World Cup Poll CI <${{ secrets.MAIL_USERNAME }}>
+          subject: "[${{ job.status == 'success' && 'OK' || 'FALHA' }}] Pipeline - ${{ github.ref_name }} #${{ github.run_number }}"
+          body: |
+            Repositório : ${{ github.repository }}
+            Branch      : ${{ github.ref_name }}
+            Commit      : ${{ github.sha }}
+            Executado por: ${{ github.actor }}
 
-      - name: Notification script (shell)
-        run: sh src/shell.sh
+            Status: ${{ job.status }}
+
+            Veja a execução completa em:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 
   deploy-site:
