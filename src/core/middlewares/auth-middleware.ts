@@ -1,4 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
+import { UnauthorizedError } from '@/core/errors/error-handler'
 import { makeSessionService } from '@/modules/session/services/make-session.service'
 
 const sessionService = makeSessionService()
@@ -7,9 +8,7 @@ export async function authMiddleware(request: FastifyRequest, reply: FastifyRepl
 	const sessionId = request.cookies.session_id
 
 	if (!sessionId) {
-		return reply.status(401).send({
-			message: 'Não autenticado',
-		})
+		throw new UnauthorizedError('Usuário não autenticado')
 	}
 
 	const session = await sessionService.validateSession(sessionId)

@@ -21,11 +21,11 @@ export class SessionService {
 		const session = await this.sessionRepository.findByToken(sessionToken)
 
 		if (!session) {
-			throw new UnauthorizedError('Session not found')
+			throw new UnauthorizedError('Usuário não autenticado')
 		}
 
 		if (isBefore(session.expiresAt, new Date())) {
-			throw new UnauthorizedError('Session expired')
+			throw new UnauthorizedError('Sessão expirada')
 		}
 
 		return session

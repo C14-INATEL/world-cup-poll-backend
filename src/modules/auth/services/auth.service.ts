@@ -1,4 +1,4 @@
-import { UnauthorizedError } from '@/core/errors/error-handler'
+import { BadRequestError, UnauthorizedError } from '@/core/errors/error-handler'
 import { compareHashPassword } from '@/core/utils/password'
 import { UnitOfWork } from '@/infrastructure/db/unit-of-work'
 import { SessionService } from '@/modules/session/services/session.service'
@@ -15,7 +15,7 @@ export class AuthService {
 		const user = await this.userService.findUserByEmail(data.email)
 
 		if (!user) {
-			throw new UnauthorizedError('Email ou senha incorretos')
+			throw new BadRequestError('Email ou senha incorretos')
 		}
 
 		const isPasswordValid = await compareHashPassword(
@@ -24,7 +24,7 @@ export class AuthService {
 		)
 
 		if (!isPasswordValid) {
-			throw new UnauthorizedError('Email ou senha incorretos')
+			throw new BadRequestError('Email ou senha incorretos')
 		}
 
 		const session = await this.sessionService.createSession(user.id)
