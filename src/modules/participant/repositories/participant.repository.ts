@@ -50,6 +50,18 @@ export class ParticipantRepository implements ParticipantRepositoryInterface {
 			.where(eq(participantTable.pollId, pollId))
 	}
 
+	async getParticipantsByPollId(pollId: string) {
+		return db
+			.select({
+				userId: participantTable.userId,
+				name: userTable.name,
+				email: userTable.email,
+			})
+			.from(participantTable)
+			.innerJoin(userTable, eq(participantTable.userId, userTable.id))
+			.where(eq(participantTable.pollId, pollId))
+	}
+
 	async add(data: ParticipantInsert, executor: DbExecutor = db) {
 		return executor
 			.insert(participantTable)

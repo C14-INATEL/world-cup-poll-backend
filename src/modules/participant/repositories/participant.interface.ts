@@ -6,5 +6,8 @@ export interface ParticipantRepositoryInterface {
 	findByUserId(userId: string): Promise<Participant | null>
 	findByUserIdAndPollId(userId: string, pollId: string): Promise<Participant | null>
 	findAll(pollId: string): Promise<{ userId: string; name: string; email: string }[]>
+	getParticipantsByPollId(
+		pollId: string,
+	): Promise<{ userId: string; name: string; email: string }[]>
 	add(data: ParticipantInsert, executor?: DbExecutor): Promise<Participant>
 }

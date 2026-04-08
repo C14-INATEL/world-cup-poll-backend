@@ -1,4 +1,4 @@
-import { and, count, eq, exists, isNotNull, or } from 'drizzle-orm'
+import { and, eq, exists, isNotNull, or, sql } from 'drizzle-orm'
 import { db } from '@/infrastructure/db'
 import {
 	PollInsert,
@@ -34,7 +34,6 @@ export class PollRepository implements PollRepositoryInterface {
 				createdAt: pollTable.createdAt,
 				ownerId: pollTable.ownerId,
 				ownerName: userTable.name,
-				participantsCount: count(participantTable.id),
 			})
 			.from(pollTable)
 			.innerJoin(userTable, eq(pollTable.ownerId, userTable.id))
@@ -71,7 +70,14 @@ export class PollRepository implements PollRepositoryInterface {
 				createdAt: pollTable.createdAt,
 				ownerId: pollTable.ownerId,
 				ownerName: userTable.name,
-				participantsCount: count(participantTable.id),
+				participants: sql<string[]>`
+					(
+						SELECT COALESCE(array_agg(${userTable.name} ORDER BY ${userTable.name}), ARRAY[]::text[])
+						FROM ${participantTable}
+						INNER JOIN ${userTable} ON ${userTable.id} = ${participantTable.userId}
+						WHERE ${participantTable.pollId} = ${pollTable.id}
+					)
+				`.as('participants'),
 			})
 			.from(pollTable)
 			.innerJoin(userTable, eq(pollTable.ownerId, userTable.id))
