@@ -9,3 +9,5 @@ drizzle
 logs
 docker-compose.yml
 README.md
+.env
+.env.*
