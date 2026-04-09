@@ -10,12 +10,6 @@ FROM node:22-bookworm-slim AS build
 
 WORKDIR /app
 
-ARG DATABASE_URL
-ARG FOOTBALL_API_KEY=docker-build
-
-ENV DATABASE_URL=$DATABASE_URL
-ENV FOOTBALL_API_KEY=$FOOTBALL_API_KEY
-
 COPY package.json package-lock.json ./
 RUN npm ci
 
@@ -24,7 +18,6 @@ COPY src ./src
 COPY drizzle.config.* ./
 
 RUN npm run build
-RUN npx drizzle-kit generate
 
 
 FROM node:22-bookworm-slim AS runner
