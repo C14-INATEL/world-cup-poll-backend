@@ -29,7 +29,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Compile TypeScript
         run: npm run build
@@ -57,7 +57,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run unit tests
         run: npx vitest run --reporter=junit --outputFile=./test-results/junit.xml
@@ -95,7 +95,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run tests with coverage
         run: npm run coverage
@@ -164,7 +164,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Generate coverage report (HTML)
         run: npm run coverage
