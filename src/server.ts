@@ -14,7 +14,7 @@ process.on('unhandledRejection', (reason, promise) => {
 const fastify = buildApp()
 
 fastify
-	.listen({ port: env.PORT })
+	.listen({ port: env.PORT, host: '0.0.0.0' })
 	.then(() => {
 		console.log(`Servidor rodando em http://localhost:${env.PORT}`)
 	})
