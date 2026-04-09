@@ -15,8 +15,10 @@ RUN npm ci
 
 COPY tsconfig.json tsconfig.build.json ./
 COPY src ./src
+COPY drizzle.config.* ./
 
 RUN npm run build
+RUN npx drizzle-kit generate
 
 
 FROM node:22-bookworm-slim AS runner
@@ -29,8 +31,6 @@ COPY --from=build /app/dist ./dist
 COPY package.json ./
 
 USER node
-
-RUN npx drizzle-kit generate
 
 EXPOSE 3333
 CMD ["node", "dist/src/server.js"]
