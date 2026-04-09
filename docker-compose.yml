@@ -2,6 +2,7 @@ services:
   app:
     build: .
     image: world-cup-poll-backend:latest
+    container_name: world-cup-poll-backend
     restart: always
     environment:
       NODE_ENV: production
