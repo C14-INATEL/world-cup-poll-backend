@@ -1,6 +1,15 @@
 services:
+  app:
+    build: .
+    restart: always
+    ports:
+      - "3333:3333"
+    depends_on:
+      - db
+    mem_limit: 300m
+
   db:
-    image: postgres:16.9-bullseye
+    image: postgres:16.9-alpine3.22
     environment:
       POSTGRES_PASSWORD: example
       POSTGRES_DB: database
@@ -8,6 +17,7 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    mem_limit: 400m
 
 volumes:
   db_data:
