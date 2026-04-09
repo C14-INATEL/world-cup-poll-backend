@@ -1,9 +1,13 @@
 services:
   app:
-    build: .
+    image: world-cup-poll-backend:latest
     restart: always
+    env_file:
+      - .env
+    environment:
+      PORT: ${PORT:-3333}
     ports:
-      - "3333:3333"
+      - "${PORT:-3333}:${PORT:-3333}"
     depends_on:
       - db
     mem_limit: 300m
@@ -18,6 +22,20 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     mem_limit: 400m
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    environment:
+      PORT: ${PORT:-3333}
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/templates/default.conf.template:ro
+    depends_on:
+      - app
+    mem_limit: 100m
 
 volumes:
   db_data:
