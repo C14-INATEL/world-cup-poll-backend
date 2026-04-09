@@ -16,7 +16,12 @@ const fastify = buildApp()
 fastify
 	.listen({ port: env.PORT, host: '0.0.0.0' })
 	.then(() => {
-		console.log(`Servidor rodando em http://localhost:${env.PORT}`)
+		const address = fastify.server.address()
+		const url =
+			address && typeof address !== 'string'
+				? `http://${address.address}:${address.port}`
+				: `http://0.0.0.0:${env.PORT}`
+		console.log(`Servidor rodando em ${url}`)
 	})
 	.catch((err) => {
 		fastify.log.error(err)
