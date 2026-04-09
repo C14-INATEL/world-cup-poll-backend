@@ -82,15 +82,14 @@ jobs:
           script: |
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
-            docker stop world-cup-poll-backend || true
-            docker rm world-cup-poll-backend || true
+            cd ~/world-cup-poll-backend
 
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/world-cup-poll-backend:latest
+            # git pull origin main
 
-            docker run -d \
-              -p 3333:3333 \
-              --name world-cup-poll-backend \
-              ${{ secrets.DOCKERHUB_USERNAME }}/world-cup-poll-backend:latest
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker compose exec app npx drizzle-kit migrate || true
+            docker image prune -f
 
   # Secrets necessários no repositório:
   #   MAIL_SERVER   → ex: smtp.gmail.com
