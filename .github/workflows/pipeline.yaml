@@ -148,7 +148,7 @@ jobs:
     name: Deploy Site to GitHub Pages
     needs: [ test, coverage ]
     runs-on: ubuntu-latest
-    # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     environment:
       name: github-pages
