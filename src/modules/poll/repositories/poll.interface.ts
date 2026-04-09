@@ -11,6 +11,7 @@ export type PollListItem = Poll & {
 
 export interface PollRepositoryInterface {
 	create(data: PollInsert): Promise<Poll>
+	findById(id: string): Promise<Poll | null>
 	findByCode(code: string): Promise<Poll | null>
 	findByCodeAndUserId(code: string, userId: string): Promise<PollDetails | null>
 	findAllByUserId(userId: string): Promise<PollListItem[]>

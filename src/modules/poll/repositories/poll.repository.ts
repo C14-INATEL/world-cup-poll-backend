@@ -17,6 +17,14 @@ export class PollRepository implements PollRepositoryInterface {
 			.then((res) => res[0])
 	}
 
+	async findById(id: string) {
+		return db
+			.select()
+			.from(pollTable)
+			.where(eq(pollTable.id, id))
+			.then((res) => res[0] || null)
+	}
+
 	async findByCode(code: string) {
 		return db
 			.select()
