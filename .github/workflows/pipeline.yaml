@@ -101,6 +101,8 @@ jobs:
   notification:
     name: Notification
     runs-on: ubuntu-latest
+    needs: [test, build, docker]
+    if: always()
 
     steps:
       - name: Send e-mail notification
