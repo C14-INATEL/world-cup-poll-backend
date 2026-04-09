@@ -30,5 +30,7 @@ COPY package.json ./
 
 USER node
 
+RUN npx drizzle-kit generate
+
 EXPOSE 3333
 CMD ["node", "dist/src/server.js"]
