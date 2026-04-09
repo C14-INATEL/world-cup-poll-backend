@@ -1,5 +1,11 @@
 services:
   app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-example}@db:5432/${POSTGRES_DB:-database}
+        FOOTBALL_API_KEY: ${FOOTBALL_API_KEY:?FOOTBALL_API_KEY is required}
     image: world-cup-poll-backend:latest
     restart: always
     environment:
