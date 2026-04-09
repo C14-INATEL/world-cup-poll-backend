@@ -17,7 +17,6 @@ export class UserService {
 				email: data.email,
 				passwordHash: hashedPassword,
 			},
-			executor,
 		)
 	}
 
