@@ -34,6 +34,8 @@ ENV NODE_ENV=production
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/drizzle.config.* ./
+COPY --from=build /app/drizzle ./drizzle
 COPY package.json ./
 
 USER node
