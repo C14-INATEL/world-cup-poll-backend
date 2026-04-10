@@ -8,5 +8,8 @@ const rankingController = new RankingController(makeRankingService())
 export async function RankingRoutes(app: FastifyInstance) {
 	app.addHook('preHandler', authMiddleware)
 
-	app.get('/polls/:pollId/ranking', rankingController.getRanking.bind(rankingController))
+	app.get(
+		'/polls/:pollId/ranking',
+		rankingController.getRanking.bind(rankingController),
+	)
 }

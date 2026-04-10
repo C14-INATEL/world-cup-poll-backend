@@ -1,7 +1,7 @@
 import { NotFoundError, UnauthorizedError } from '@/core/errors/error-handler'
 import { calculateScore } from '@/core/utils/score'
-import { PollRepositoryInterface } from '@/modules/poll/repositories/poll.interface'
 import { ParticipantRepositoryInterface } from '@/modules/participant/repositories/participant.interface'
+import { PollRepositoryInterface } from '@/modules/poll/repositories/poll.interface'
 import { RankingRepositoryInterface } from '../repositories/ranking.interface'
 
 export type RankingEntry = {
@@ -36,7 +36,8 @@ export class RankingService {
 			throw new UnauthorizedError('Você não tem acesso a este bolão')
 		}
 
-		const rows = await this.rankingRepository.findParticipantsWithGuessesAndResults(pollId)
+		const rows =
+			await this.rankingRepository.findParticipantsWithGuessesAndResults(pollId)
 
 		const aggregated = new Map<
 			string,
@@ -47,8 +48,8 @@ export class RankingService {
 			const points = calculateScore({
 				guessFirst: row.guessFirstTeamPoints,
 				guessSecond: row.guessSecondTeamPoints,
-				actualFirst: row.gameFirstTeamGoals!,
-				actualSecond: row.gameSecondTeamGoals!,
+				actualFirst: row.gameFirstTeamGoals,
+				actualSecond: row.gameSecondTeamGoals,
 			})
 
 			const existing = aggregated.get(row.participantId) ?? {
@@ -65,7 +66,11 @@ export class RankingService {
 			})
 		}
 
-		const sorted = [...aggregated.values()].sort((a, b) => b.totalPoints - a.totalPoints)
+		const sorted = [...aggregated.values()].sort((a, b) => {
+			if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints
+			if (b.guessesCount !== a.guessesCount) return b.guessesCount - a.guessesCount
+			return a.name.localeCompare(b.name)
+		})
 
 		const ranked: RankingEntry[] = []
 		let currentPosition = 1

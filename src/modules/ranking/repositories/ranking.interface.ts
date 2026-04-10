@@ -4,10 +4,12 @@ export type RawParticipantGuessRow = {
 	name: string
 	guessFirstTeamPoints: number
 	guessSecondTeamPoints: number
-	gameFirstTeamGoals: number | null
-	gameSecondTeamGoals: number | null
+	gameFirstTeamGoals: number
+	gameSecondTeamGoals: number
 }
 
 export interface RankingRepositoryInterface {
-	findParticipantsWithGuessesAndResults(pollId: string): Promise<RawParticipantGuessRow[]>
+	findParticipantsWithGuessesAndResults(
+		pollId: string,
+	): Promise<RawParticipantGuessRow[]>
 }
