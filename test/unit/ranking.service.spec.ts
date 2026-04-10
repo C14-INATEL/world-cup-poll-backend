@@ -73,6 +73,79 @@ describe('RankingService', () => {
 			)
 		})
 
+		test('deve permitir acesso ao participante mesmo sem ser dono do bolão', async () => {
+			const pollRepository = {
+				findById: vi.fn().mockResolvedValue(makePoll({ ownerId: 'owner-1' })),
+			}
+
+			const participantRepository = {
+				findByUserIdAndPollId: vi
+					.fn()
+					.mockResolvedValue(makeParticipant({ userId: 'user-2' })),
+			}
+
+			const rankingRepository = {
+				findParticipantsWithGuessesAndResults: vi.fn().mockResolvedValue([
+					makeRankingRow({
+						participantId: 'p-2',
+						userId: 'user-2',
+						name: 'Bob',
+						guessFirstTeamPoints: 1,
+						guessSecondTeamPoints: 0,
+						gameFirstTeamGoals: 1,
+						gameSecondTeamGoals: 0,
+					}),
+				]),
+			}
+
+			const service = new RankingService(
+				rankingRepository as any,
+				pollRepository as any,
+				participantRepository as any,
+			)
+
+			const ranking = await service.getRanking('poll-1', 'user-2')
+
+			expect(rankingRepository.findParticipantsWithGuessesAndResults).toHaveBeenCalledWith(
+				'poll-1',
+			)
+			expect(ranking).toHaveLength(1)
+			expect(ranking[0]).toMatchObject({
+				position: 1,
+				userId: 'user-2',
+				name: 'Bob',
+				totalPoints: 5,
+				guessesCount: 1,
+			})
+		})
+
+		test('não deve buscar ranking quando o usuário não tem acesso ao bolão', async () => {
+			const pollRepository = {
+				findById: vi.fn().mockResolvedValue(makePoll({ ownerId: 'owner-1' })),
+			}
+
+			const participantRepository = {
+				findByUserIdAndPollId: vi.fn().mockResolvedValue(null),
+			}
+
+			const rankingRepository = {
+				findParticipantsWithGuessesAndResults: vi.fn(),
+			}
+
+			const service = new RankingService(
+				rankingRepository as any,
+				pollRepository as any,
+				participantRepository as any,
+			)
+
+			await expect(service.getRanking('poll-1', 'user-99')).rejects.toThrow(
+				UnauthorizedError,
+			)
+			expect(
+				rankingRepository.findParticipantsWithGuessesAndResults,
+			).not.toHaveBeenCalled()
+		})
+
 		test('deve permitir acesso ao dono do bolão mesmo sem ser participante', async () => {
 			const pollRepository = {
 				findById: vi.fn().mockResolvedValue(makePoll({ ownerId: 'owner-1' })),
@@ -257,6 +330,140 @@ describe('RankingService', () => {
 			// Both have same totalPoints and guessesCount, so sorted alphabetically
 			expect(ranking[0].name).toBe('Bob')
 			expect(ranking[1].name).toBe('Zara')
+		})
+
+		test('deve desempatar por guessesCount quando totalPoints for igual', async () => {
+			const pollRepository = {
+				findById: vi.fn().mockResolvedValue(makePoll({ ownerId: 'owner-1' })),
+			}
+
+			const participantRepository = {
+				findByUserIdAndPollId: vi.fn().mockResolvedValue(makeParticipant()),
+			}
+
+			const rankingRepository = {
+				findParticipantsWithGuessesAndResults: vi.fn().mockResolvedValue([
+					// Ana: 2 palpites, total de 3 pontos (3 + 0)
+					makeRankingRow({
+						participantId: 'p-1',
+						userId: 'user-1',
+						name: 'Ana',
+						guessFirstTeamPoints: 2,
+						guessSecondTeamPoints: 0,
+						gameFirstTeamGoals: 1,
+						gameSecondTeamGoals: 0,
+					}),
+					makeRankingRow({
+						participantId: 'p-1',
+						userId: 'user-1',
+						name: 'Ana',
+						guessFirstTeamPoints: 3,
+						guessSecondTeamPoints: 0,
+						gameFirstTeamGoals: 0,
+						gameSecondTeamGoals: 1,
+					}),
+					// Bob: 1 palpite, total de 3 pontos
+					makeRankingRow({
+						participantId: 'p-2',
+						userId: 'user-2',
+						name: 'Bob',
+						guessFirstTeamPoints: 2,
+						guessSecondTeamPoints: 0,
+						gameFirstTeamGoals: 1,
+						gameSecondTeamGoals: 0,
+					}),
+				]),
+			}
+
+			const service = new RankingService(
+				rankingRepository as any,
+				pollRepository as any,
+				participantRepository as any,
+			)
+
+			const ranking = await service.getRanking('poll-1', 'user-1')
+
+			expect(ranking).toHaveLength(2)
+			expect(ranking[0]).toMatchObject({
+				name: 'Ana',
+				totalPoints: 3,
+				guessesCount: 2,
+				position: 1,
+			})
+			expect(ranking[1]).toMatchObject({
+				name: 'Bob',
+				totalPoints: 3,
+				guessesCount: 1,
+				position: 1,
+			})
+		})
+
+		test('deve manter posições corretas para múltiplos grupos empatados', async () => {
+			const pollRepository = {
+				findById: vi.fn().mockResolvedValue(makePoll({ ownerId: 'owner-1' })),
+			}
+
+			const participantRepository = {
+				findByUserIdAndPollId: vi.fn().mockResolvedValue(makeParticipant()),
+			}
+
+			const rankingRepository = {
+				findParticipantsWithGuessesAndResults: vi.fn().mockResolvedValue([
+					// Grupo de 5 pontos
+					makeRankingRow({
+						participantId: 'p-2',
+						userId: 'user-2',
+						name: 'Bruno',
+						guessFirstTeamPoints: 2,
+						guessSecondTeamPoints: 1,
+						gameFirstTeamGoals: 2,
+						gameSecondTeamGoals: 1,
+					}),
+					makeRankingRow({
+						participantId: 'p-1',
+						userId: 'user-1',
+						name: 'Alice',
+						guessFirstTeamPoints: 1,
+						guessSecondTeamPoints: 0,
+						gameFirstTeamGoals: 1,
+						gameSecondTeamGoals: 0,
+					}),
+					// Grupo de 3 pontos
+					makeRankingRow({
+						participantId: 'p-4',
+						userId: 'user-4',
+						name: 'Davi',
+						guessFirstTeamPoints: 2,
+						guessSecondTeamPoints: 0,
+						gameFirstTeamGoals: 1,
+						gameSecondTeamGoals: 0,
+					}),
+					makeRankingRow({
+						participantId: 'p-3',
+						userId: 'user-3',
+						name: 'Carol',
+						guessFirstTeamPoints: 3,
+						guessSecondTeamPoints: 0,
+						gameFirstTeamGoals: 1,
+						gameSecondTeamGoals: 0,
+					}),
+				]),
+			}
+
+			const service = new RankingService(
+				rankingRepository as any,
+				pollRepository as any,
+				participantRepository as any,
+			)
+
+			const ranking = await service.getRanking('poll-1', 'user-1')
+
+			expect(ranking.map((entry) => `${entry.name}:${entry.position}`)).toEqual([
+				'Alice:1',
+				'Bruno:1',
+				'Carol:3',
+				'Davi:3',
+			])
 		})
 
 		test('deve retornar lista vazia quando não há palpites com resultados finalizados', async () => {
