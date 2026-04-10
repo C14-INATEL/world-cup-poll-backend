@@ -5,7 +5,7 @@ import { GameInsert } from '../db/schemas'
 
 type MatchesApiResponse = {
 	id: number
-	utcDate: Date
+	utcDate: string
 	status: string
 	matchday: number
 	stage: string

@@ -10,7 +10,7 @@ import {
 export const gameTable = pgTable('game', {
 	id: uuid().primaryKey().defaultRandom(),
 	apiId: integer().notNull().unique(),
-	date: timestamp({ withTimezone: true }).notNull(),
+	date: timestamp({ withTimezone: true, mode: 'string' }).notNull(),
 	status: text().notNull(),
 	firstTeamCountryCode: varchar().notNull(),
 	secondTeamCountryCode: varchar().notNull(),
