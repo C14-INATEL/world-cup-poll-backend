@@ -19,7 +19,7 @@ describe('GuessService', () => {
 	})
 
 	describe('create', () => {
-		test('deve lançar BadRequestError se usuário não é participante do bolão', async () => {
+		test('should throw BadRequestError if user is not a poll participant', async () => {
 			const participantRepository = {
 				findByUserIdAndPollId: vi.fn().mockResolvedValue(null),
 			}
@@ -44,7 +44,7 @@ describe('GuessService', () => {
 			)
 		})
 
-		test('deve lançar NotFoundError se jogo não existe', async () => {
+		test('should throw NotFoundError if game does not exist', async () => {
 			const participantRepository = {
 				findByUserIdAndPollId: vi.fn().mockResolvedValue(makeParticipant()),
 			}
@@ -68,7 +68,7 @@ describe('GuessService', () => {
 			).rejects.toThrow(NotFoundError)
 		})
 
-		test('deve lançar BadRequestError se a data do jogo já passou', async () => {
+		test('should throw BadRequestError if game date has already passed', async () => {
 			vi.useFakeTimers()
 			vi.setSystemTime(new Date('2026-06-01T12:00:00.000Z'))
 
@@ -99,7 +99,7 @@ describe('GuessService', () => {
 			).rejects.toThrow(BadRequestError)
 		})
 
-		test('deve criar palpite com o participantId correto', async () => {
+		test('should create guess with the correct participantId', async () => {
 			const participant = makeParticipant({ id: 'participant-99' })
 
 			const participantRepository = {
@@ -135,7 +135,7 @@ describe('GuessService', () => {
 	})
 
 	describe('update', () => {
-		test('deve lançar BadRequestError se usuário não é participante do bolão', async () => {
+		test('should throw BadRequestError if user is not a poll participant', async () => {
 			const participantRepository = {
 				findByUserIdAndPollId: vi.fn().mockResolvedValue(null),
 			}
@@ -156,7 +156,7 @@ describe('GuessService', () => {
 			).rejects.toThrow(BadRequestError)
 		})
 
-		test('deve lançar NotFoundError se palpite não existe', async () => {
+		test('should throw NotFoundError if guess does not exist', async () => {
 			const participantRepository = {
 				findByUserIdAndPollId: vi.fn().mockResolvedValue(makeParticipant()),
 			}
@@ -181,7 +181,7 @@ describe('GuessService', () => {
 			).rejects.toThrow(NotFoundError)
 		})
 
-		test('deve lançar UnauthorizedError se palpite pertence a outro participante', async () => {
+		test('should throw UnauthorizedError if guess belongs to another participant', async () => {
 			const participantRepository = {
 				findByUserIdAndPollId: vi
 					.fn()
@@ -210,7 +210,7 @@ describe('GuessService', () => {
 			).rejects.toThrow(UnauthorizedError)
 		})
 
-		test('deve lançar NotFoundError se jogo não existe', async () => {
+		test('should throw NotFoundError if game does not exist', async () => {
 			const participantRepository = {
 				findByUserIdAndPollId: vi.fn().mockResolvedValue(makeParticipant()),
 			}
@@ -239,7 +239,7 @@ describe('GuessService', () => {
 			).rejects.toThrow(NotFoundError)
 		})
 
-		test('deve lançar BadRequestError se a data do jogo já passou', async () => {
+		test('should throw BadRequestError if game date has already passed', async () => {
 			vi.useFakeTimers()
 			vi.setSystemTime(new Date('2026-06-01T12:00:00.000Z'))
 
@@ -275,7 +275,7 @@ describe('GuessService', () => {
 			).rejects.toThrow(BadRequestError)
 		})
 
-		test('deve atualizar palpite com sucesso', async () => {
+		test('should update guess successfully', async () => {
 			const participantRepository = {
 				findByUserIdAndPollId: vi.fn().mockResolvedValue(makeParticipant()),
 			}
