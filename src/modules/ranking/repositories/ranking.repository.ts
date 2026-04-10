@@ -6,11 +6,14 @@ import {
 	participantTable,
 	userTable,
 } from '@/infrastructure/db/schemas'
-import { RankingRepositoryInterface } from './ranking.interface'
+import {
+	RankingRepositoryInterface,
+	type RawParticipantGuessRow,
+} from './ranking.interface'
 
 export class RankingRepository implements RankingRepositoryInterface {
 	async findParticipantsWithGuessesAndResults(pollId: string) {
-		return db
+		const rows = await db
 			.select({
 				participantId: participantTable.id,
 				userId: participantTable.userId,
@@ -31,5 +34,13 @@ export class RankingRepository implements RankingRepositoryInterface {
 					isNotNull(gameTable.secondTeamGoals),
 				),
 			)
+
+		return rows.map(
+			(row): RawParticipantGuessRow => ({
+				...row,
+				gameFirstTeamGoals: row.gameFirstTeamGoals!,
+				gameSecondTeamGoals: row.gameSecondTeamGoals!,
+			}),
+		)
 	}
 }
