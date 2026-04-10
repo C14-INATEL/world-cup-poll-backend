@@ -91,18 +91,18 @@ Serviços definidos:
 
 ## Scripts
 
-| Script | Descrição |
-| --- | --- |
-| `npm run dev` | Sobe a API em modo desenvolvimento com watch |
-| `npm run build` | Gera build de produção em `dist` |
-| `npm run start` | Executa a API a partir do build |
-| `npm run migrate:prod` | Executa migrações usando build de produção |
-| `npm run seed:games` | Busca/atualiza jogos via script |
-| `npm run test` | Executa testes com Vitest |
-| `npm run coverage` | Executa testes com cobertura |
-| `npm run format` | Aplica formatação e lint com Biome |
-| `npm run format:check` | Verifica formatação/lint sem alterar arquivos |
-| `npm run generate-migration -- --name=<nome>` | Gera migration SQL com nome customizado |
+| Script                                        | Descrição                                     |
+| --------------------------------------------- | --------------------------------------------- |
+| `npm run dev`                                 | Sobe a API em modo desenvolvimento com watch  |
+| `npm run build`                               | Gera build de produção em `dist`              |
+| `npm run start`                               | Executa a API a partir do build               |
+| `npm run migrate:prod`                        | Executa migrações usando build de produção    |
+| `npm run seed:games`                          | Busca/atualiza jogos via script               |
+| `npm run test`                                | Executa testes com Vitest                     |
+| `npm run coverage`                            | Executa testes com cobertura                  |
+| `npm run format`                              | Aplica formatação e lint com Biome            |
+| `npm run format:check`                        | Verifica formatação/lint sem alterar arquivos |
+| `npm run generate-migration -- --name=<nome>` | Gera migration SQL com nome customizado       |
 
 ## Rotas principais
 
@@ -180,3 +180,19 @@ Executar cobertura:
 ```bash
 npm run coverage
 ```
+
+## Notificação de pipeline
+
+O workflow de CI/CD envia uma notificação ao final da execução por meio de um script JavaScript em:
+
+- `.github/scripts/send-pipeline-notification.mjs`
+
+Para habilitar, configure no GitHub Actions o secret abaixo:
+
+- `PIPELINE_WEBHOOK_URL`: URL de webhook para receber a mensagem (ex.: Discord, Slack Incoming Webhook, Google Chat, etc.)
+
+A mensagem inclui:
+
+- status final do pipeline
+- resultados de `test`, `build`, `docker` e `deploy`
+- branch, commit, ator e link da execução
