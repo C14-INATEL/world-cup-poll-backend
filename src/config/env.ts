@@ -6,7 +6,7 @@ const envSchema = z.object({
 	PORT: z.number().min(1),
 	FOOTBALL_API_KEY: z.string().min(1),
 	JWT_SECRET: z.string().min(1),
-	FRONTEND_URL: z.url().optional(),
+	FRONTEND_URL: z.string().url().optional().or(z.literal('')),
 })
 
 export const env = envSchema.parse({

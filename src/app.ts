@@ -25,7 +25,7 @@ const buildApp = () => {
 		secret: env.JWT_SECRET,
 	})
 	app.register(cors, {
-		origin: env.FRONTEND_URL ?? true,
+		origin: env.FRONTEND_URL ?? false,
 		credentials: true,
 	})
 

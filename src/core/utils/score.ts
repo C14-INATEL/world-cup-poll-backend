@@ -23,7 +23,8 @@ export function calculateScore({
 	if (guessFirst === actualFirst && guessSecond === actualSecond) return 5
 
 	// Regra 2: acertou apenas o vencedor ou empate
-	if (getOutcome(guessFirst, guessSecond) === getOutcome(actualFirst, actualSecond)) return 3
+	if (getOutcome(guessFirst, guessSecond) === getOutcome(actualFirst, actualSecond))
+		return 3
 
 	// Regra 3: acertou apenas um dos gols
 	if (guessFirst === actualFirst || guessSecond === actualSecond) return 1
