@@ -21,7 +21,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run unit tests
         run: npx vitest run
@@ -40,7 +40,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build app
         run: npm run build
@@ -88,7 +88,6 @@ jobs:
 
             docker compose pull
             docker compose up -d --remove-orphans
-            docker compose exec app npx drizzle-kit migrate || true
             docker image prune -f
 
   # Secrets necessários no repositório:
