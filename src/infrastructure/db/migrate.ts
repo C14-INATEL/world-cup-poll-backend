@@ -2,7 +2,7 @@ import { migrate } from 'drizzle-orm/postgres-js/migrator'
 import { db } from '.'
 
 async function runMigrations() {
-	await migrate(db, { migrationsFolder: 'src/infrastructure/db/migrations' })
+	await migrate(db, { migrationsFolder: 'drizzle' })
 }
 
 runMigrations()

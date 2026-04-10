@@ -29,11 +29,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/drizzle ./drizzle
 COPY package.json ./
+COPY entrypoint.sh ./
 
 USER node
 
-RUN npm run migrate:prod
-RUN npm run seed:games
-
 EXPOSE 3333
-CMD ["node", "dist/src/server.js"]
+CMD ["sh", "entrypoint.sh"]
