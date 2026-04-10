@@ -25,8 +25,16 @@ const buildApp = () => {
 		secret: env.JWT_SECRET,
 	})
 	app.register(cors, {
-		origin: env.FRONTEND_URL ?? false,
-		credentials: true,
+		origin:
+			env.FRONTEND_URL ??
+			((origin, cb) => {
+				const hostname = new URL(origin || '').hostname
+				if (hostname === 'localhost') {
+					cb(null, true)
+					return
+				}
+				cb(new Error('Not allowed'), false)
+			}),
 	})
 
 	app.setErrorHandler(errorHandler)
