@@ -35,7 +35,7 @@ cp .env.example .env
 3. Suba o banco de dados com Docker:
 
 ```
-docker compose up -d
+docker compose up -d db
 ```
 
 4. Execute as migrations para criar as tabelas no banco:
