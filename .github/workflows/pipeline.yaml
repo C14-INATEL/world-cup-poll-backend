@@ -57,56 +57,56 @@ jobs:
       - name: Build app
         run: npm run build
 
-  # docker:
-  #   runs-on: ubuntu-latest
-  #   needs: [test, build]
-  #   if: success()
+  docker:
+    runs-on: ubuntu-latest
+    needs: [test, build]
+    if: success()
 
-  #   steps:
-  #     - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Docker Hub login
-  #       uses: docker/login-action@v3
-  #       with:
-  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Docker Hub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  #     - name: Docker image build
-  #       run: |
-  #         docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/world-cup-poll-backend:latest .
+      - name: Docker image build
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/world-cup-poll-backend:latest .
 
-  #     - name: Docker image push
-  #       run: |
-  #         docker push ${{ secrets.DOCKERHUB_USERNAME }}/world-cup-poll-backend:latest
+      - name: Docker image push
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/world-cup-poll-backend:latest
 
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   needs: docker
-  #   if: success()
+  deploy:
+    runs-on: ubuntu-latest
+    needs: docker
+    if: success()
 
-  #   steps:
-  #     - name: Deploy via SSH
-  #       uses: appleboy/ssh-action@v1.0.3
-  #       with:
-  #         host: ${{ secrets.SSH_HOST }}
-  #         username: ${{ secrets.SSH_USER }}
-  #         key: ${{ secrets.SSH_PRIVATE_KEY }}
-  #         script: |
-  #           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
-  #           cd ~/world-cup-poll-backend
+            cd ~/world-cup-poll-backend
 
-  #           git fetch origin
-  #           git reset --hard origin/main
+            git fetch origin
+            git reset --hard origin/main
 
-  #           docker compose pull
-  #           docker compose up -d --remove-orphans
-  #           docker image prune -f
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker image prune -f
 
   notification:
     name: Pipeline notification
     runs-on: ubuntu-latest
-    needs: [test, build]
+    needs: [test, build, docker, deploy]
     if: always()
 
     steps:
@@ -133,7 +133,6 @@ jobs:
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           RESEND_TO: ${{ secrets.RESEND_TO }}
-          RESEND_FROM: ${{ secrets.RESEND_FROM }}
           TEST_RESULT: ${{ needs.test.result }}
           BUILD_RESULT: ${{ needs.build.result }}
           DOCKER_RESULT: ${{ needs.docker.result }}

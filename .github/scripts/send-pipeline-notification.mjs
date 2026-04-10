@@ -17,7 +17,6 @@ const deployResult = (process.env.DEPLOY_RESULT || 'unknown').toLowerCase()
 
 const resendApiKey = getRequiredEnv('RESEND_API_KEY')
 const resendTo = getRequiredEnv('RESEND_TO')
-const resendFrom = getRequiredEnv('RESEND_FROM')
 const artifactsDir = process.env.TEST_ARTIFACTS_DIR || '.artifacts/test-reports'
 
 const resolvePipelineStatus = (results) => {
@@ -136,13 +135,13 @@ if (fs.existsSync(coverageSummaryPath)) {
 const resend = new Resend(resendApiKey)
 
 resend.emails.send({
-	from: resendFrom,
+	from: 'CI - World Cup Poll <onboarding@resend.dev>',
 	to: resendTo,
 	subject,
 	text: message,
 	attachments,
 }).then((response) => {
-	console.log(response)
+	console.log(`Resend response: ${JSON.stringify(response)}`)
 }).catch((error) => {
 	console.error(error)
 })
