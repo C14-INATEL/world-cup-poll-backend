@@ -31,6 +31,8 @@ COPY --from=build /app/drizzle ./drizzle
 COPY package.json ./
 COPY entrypoint.sh ./
 
+RUN mkdir -p /app/logs && chown -R node:node /app
+
 USER node
 
 EXPOSE 3333
