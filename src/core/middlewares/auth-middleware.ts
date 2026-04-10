@@ -4,14 +4,29 @@ import { makeSessionService } from '@/modules/session/services/make-session.serv
 
 const sessionService = makeSessionService()
 
-export async function authMiddleware(request: FastifyRequest, reply: FastifyReply) {
-	const sessionId = request.cookies.session_id
+type AuthTokenPayload = {
+	sessionToken?: string
+	sub?: string
+}
 
-	if (!sessionId) {
+export async function authMiddleware(request: FastifyRequest, reply: FastifyReply) {
+	let payload: AuthTokenPayload
+
+	try {
+		payload = await request.jwtVerify<AuthTokenPayload>()
+	} catch {
 		throw new UnauthorizedError('Usuário não autenticado')
 	}
 
-	const session = await sessionService.validateSession(sessionId)
+	if (!payload.sessionToken) {
+		throw new UnauthorizedError('Usuário não autenticado')
+	}
+
+	const session = await sessionService.validateSession(payload.sessionToken)
+
+	if (payload.sub && payload.sub !== session.userId) {
+		throw new UnauthorizedError('Usuário não autenticado')
+	}
 
 	request.userId = session.userId
 }

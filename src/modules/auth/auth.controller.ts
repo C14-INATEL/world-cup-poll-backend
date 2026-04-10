@@ -2,6 +2,10 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import z from 'zod'
 import { AuthService } from '@/modules/auth/services/auth.service'
 
+type AuthTokenPayload = {
+	sessionToken?: string
+}
+
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
@@ -16,18 +20,19 @@ export class AuthController {
 
 		const { user, session } = await this.authService.register(userData)
 
-		reply.setCookie('session_id', session.sessionToken, {
-			path: '/',
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'lax',
-			expires: session.expiresAt,
-		})
+		const token = await reply.jwtSign(
+			{ sessionToken: session.sessionToken },
+			{
+				sub: user.id,
+				expiresIn: '7d',
+			},
+		)
 
 		return reply.status(201).send({
 			id: user.id,
 			name: user.name,
 			email: user.email,
+			token,
 		})
 	}
 
@@ -41,27 +46,28 @@ export class AuthController {
 
 		const { user, session } = await this.authService.login(userData)
 
-		reply.setCookie('session_id', session.sessionToken, {
-			path: '/',
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'lax',
-			expires: session.expiresAt,
-		})
+		const token = await reply.jwtSign(
+			{ sessionToken: session.sessionToken },
+			{
+				sub: user.id,
+				expiresIn: '7d',
+			},
+		)
 
 		return reply.status(200).send({
 			id: user.id,
 			name: user.name,
 			email: user.email,
+			token,
 		})
 	}
 
 	async logout(request: FastifyRequest, reply: FastifyReply) {
-		if (request.cookies['session_id']) {
-			await this.authService.logout(request.cookies['session_id'])
-		}
+		const payload = await request.jwtVerify<AuthTokenPayload>()
 
-		reply.clearCookie('session_id', { path: '/' })
+		if (payload.sessionToken) {
+			await this.authService.logout(payload.sessionToken)
+		}
 
 		return reply.status(204).send()
 	}
