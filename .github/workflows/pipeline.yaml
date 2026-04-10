@@ -175,12 +175,12 @@ jobs:
       - name: Send notification email
         uses: dawidd6/action-send-mail@v6
         with:
-          server_address: ${{ secrets.MAIL_SERVER_ADDRESS }}
-          server_port: ${{ secrets.MAIL_SERVER_PORT }}
+          server_address: smtp.gmail.com
+          server_port: 465
           secure: true
-          username: ${{ secrets.MAIL_USERNAME }}
+          username: joaovitorlucena000@gmail.com
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: ${{ steps.email_content.outputs.subject }}
           to: ${{ secrets.MAIL_TO }}
-          from: ${{ secrets.MAIL_FROM }}
+          from: CI - World Cup Poll <joaovitorlucena000@gmail.com>
           html_body: ${{ steps.email_content.outputs.html_body }}
