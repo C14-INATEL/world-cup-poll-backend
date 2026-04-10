@@ -135,12 +135,15 @@ if (fs.existsSync(coverageSummaryPath)) {
 
 const resend = new Resend(resendApiKey)
 
-await resend.emails.send({
+resend.emails.send({
 	from: resendFrom,
 	to: resendTo,
 	subject,
 	text: message,
 	attachments,
+}).then((response) => {
+	console.log(response)
+}).catch((error) => {
+	console.error(error)
 })
 
-console.log('Resend notification sent successfully')
