@@ -11,13 +11,11 @@ export class UserService {
 	) {
 		const hashedPassword = await hashPassword(data.password)
 
-		return await this.userRepository.create(
-			{
-				name: data.name,
-				email: data.email,
-				passwordHash: hashedPassword,
-			},
-		)
+		return await this.userRepository.create({
+			name: data.name,
+			email: data.email,
+			passwordHash: hashedPassword,
+		})
 	}
 
 	async findUserByEmail(email: string) {
