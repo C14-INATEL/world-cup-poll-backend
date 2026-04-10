@@ -1,5 +1,6 @@
 import cookie from '@fastify/cookie'
 import cors from '@fastify/cors'
+import jwt from '@fastify/jwt'
 import Fastify from 'fastify'
 import cron from 'node-cron'
 import { env } from '@/config/env'
@@ -20,6 +21,9 @@ const buildApp = () => {
 	})
 
 	app.register(cookie)
+	app.register(jwt, {
+		secret: env.JWT_SECRET,
+	})
 	app.register(cors, {
 		origin: env.FRONTEND_URL,
 		credentials: true,
