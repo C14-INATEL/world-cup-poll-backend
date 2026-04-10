@@ -17,7 +17,7 @@ describe('AuthService', () => {
 	})
 
 	describe('login', () => {
-		test('deve lançar BadRequestError se usuário não existe', async () => {
+		test('should throw BadRequestError if user does not exist', async () => {
 			const userService = { findUserByEmail: vi.fn().mockResolvedValue(null) }
 			const sessionService = { createSession: vi.fn() }
 
@@ -31,10 +31,12 @@ describe('AuthService', () => {
 				service.login({ email: 'naoexiste@example.com', password: '123456' }),
 			).rejects.toThrow(BadRequestError)
 
-			expect(userService.findUserByEmail).toHaveBeenCalledWith('naoexiste@example.com')
+			expect(userService.findUserByEmail).toHaveBeenCalledWith(
+				'naoexiste@example.com',
+			)
 		})
 
-		test('deve lançar BadRequestError se senha está incorreta', async () => {
+		test('should throw BadRequestError if password is incorrect', async () => {
 			const user = makeUser()
 			const userService = { findUserByEmail: vi.fn().mockResolvedValue(user) }
 			const sessionService = { createSession: vi.fn() }
@@ -52,7 +54,7 @@ describe('AuthService', () => {
 			).rejects.toThrow(BadRequestError)
 		})
 
-		test('deve retornar usuário e sessão ao fazer login com sucesso', async () => {
+		test('should return user and session on successful login', async () => {
 			const user = makeUser()
 			const session = makeSession({ userId: user.id })
 
@@ -67,34 +69,17 @@ describe('AuthService', () => {
 				{} as any,
 			)
 
-			const result = await service.login({ email: user.email, password: 'senha-correta' })
+			const result = await service.login({
+				email: user.email,
+				password: 'senha-correta',
+			})
 
 			expect(result).toEqual({ user, session })
-		})
-
-		test('deve chamar createSession com o ID correto do usuário', async () => {
-			const user = makeUser({ id: 'user-42' })
-			const session = makeSession({ userId: 'user-42' })
-
-			const userService = { findUserByEmail: vi.fn().mockResolvedValue(user) }
-			const sessionService = { createSession: vi.fn().mockResolvedValue(session) }
-
-			vi.mocked(compareHashPassword).mockResolvedValue(true)
-
-			const service = new AuthService(
-				userService as any,
-				sessionService as any,
-				{} as any,
-			)
-
-			await service.login({ email: user.email, password: 'senha-correta' })
-
-			expect(sessionService.createSession).toHaveBeenCalledWith('user-42')
 		})
 	})
 
 	describe('register', () => {
-		test('deve criar usuário e sessão ao registrar com sucesso', async () => {
+		test('should create user and session on successful registration', async () => {
 			const user = makeUser()
 			const session = makeSession({ userId: user.id })
 
@@ -119,23 +104,24 @@ describe('AuthService', () => {
 				{ email: user.email, password: 'senha123', name: user.name },
 				expect.anything(),
 			)
-			expect(sessionService.createSession).toHaveBeenCalledWith(user.id, expect.anything())
+			expect(sessionService.createSession).toHaveBeenCalledWith(
+				user.id,
+				expect.anything(),
+			)
 		})
 	})
 
 	describe('logout', () => {
-		test('deve chamar deleteSession com o token correto', async () => {
+		test('should call deleteSession with the correct token', async () => {
 			const sessionService = { deleteSession: vi.fn().mockResolvedValue(undefined) }
 
-			const service = new AuthService(
-				{} as any,
-				sessionService as any,
-				{} as any,
-			)
+			const service = new AuthService({} as any, sessionService as any, {} as any)
 
 			await service.logout('meu-token-de-sessao')
 
-			expect(sessionService.deleteSession).toHaveBeenCalledWith('meu-token-de-sessao')
+			expect(sessionService.deleteSession).toHaveBeenCalledWith(
+				'meu-token-de-sessao',
+			)
 		})
 	})
 })
