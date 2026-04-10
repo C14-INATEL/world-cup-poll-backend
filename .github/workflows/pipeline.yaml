@@ -22,7 +22,19 @@ jobs:
         run: npm ci
 
       - name: Run unit tests
-        run: npx vitest run
+        run: |
+          mkdir -p reports
+          npx vitest run --coverage --reporter=junit --outputFile=reports/junit.xml
+
+      - name: Upload test and coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            reports/junit.xml
+            coverage/**
+          if-no-files-found: warn
 
   build:
     name: Build
@@ -102,10 +114,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: "npm"
+
+      - name: Install mail dependency
+        run: npm install nodemailer --no-save
+
+      - name: Download test artifacts
+        if: always()
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: test-reports
+          path: .artifacts/test-reports
 
       - name: Send notification script
         env:
-          PIPELINE_WEBHOOK_URL: ${{ secrets.PIPELINE_WEBHOOK_URL }}
+          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_SECURE: ${{ secrets.MAIL_SECURE }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
           TEST_RESULT: ${{ needs.test.result }}
           BUILD_RESULT: ${{ needs.build.result }}
           DOCKER_RESULT: ${{ needs.docker.result }}
@@ -117,4 +147,5 @@ jobs:
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          TEST_ARTIFACTS_DIR: .artifacts/test-reports
         run: node .github/scripts/send-pipeline-notification.mjs

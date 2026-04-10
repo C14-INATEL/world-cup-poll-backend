@@ -183,16 +183,29 @@ npm run coverage
 
 ## Notificação de pipeline
 
-O workflow de CI/CD envia uma notificação ao final da execução por meio de um script JavaScript em:
+O workflow de CI/CD envia notificação por e-mail ao final da execução por meio de um script JavaScript em:
 
 - `.github/scripts/send-pipeline-notification.mjs`
 
-Para habilitar, configure no GitHub Actions o secret abaixo:
+Para habilitar, configure no GitHub Actions os secrets abaixo:
 
-- `PIPELINE_WEBHOOK_URL`: URL de webhook para receber a mensagem (ex.: Discord, Slack Incoming Webhook, Google Chat, etc.)
+- `MAIL_SERVER`: servidor SMTP (ex.: smtp.gmail.com)
+- `MAIL_PORT`: porta SMTP (ex.: 465)
+- `MAIL_SECURE`: `true` para TLS implícito (porta 465), `false` para STARTTLS
+- `MAIL_USERNAME`: usuário/e-mail da conta SMTP
+- `MAIL_PASSWORD`: senha da conta SMTP (ou senha de app)
+- `MAIL_TO`: e-mail destinatário
+- `MAIL_FROM` (opcional): remetente exibido. Se ausente, usa `World Cup Poll CI <MAIL_USERNAME>`
 
 A mensagem inclui:
 
 - status final do pipeline
 - resultados de `test`, `build`, `docker` e `deploy`
+- resumo dos testes (total, aprovados, falhas, ignorados e duração)
+- resumo de cobertura (lines, statements, functions e branches)
 - branch, commit, ator e link da execução
+
+Além disso, o job de testes publica artifacts no GitHub Actions com:
+
+- `reports/junit.xml`
+- diretório `coverage/` (inclui `coverage-summary.json`, `lcov.info` e HTML)
