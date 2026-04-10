@@ -1,13 +1,52 @@
 services:
-  db:
-    image: postgres:16.9-bullseye
+  app:
+    image: joaolucenalima/world-cup-poll-backend:latest
+    container_name: world-cup-poll-backend
+    restart: always
     environment:
-      POSTGRES_PASSWORD: example
-      POSTGRES_DB: database
+      NODE_ENV: production
+      PORT: ${PORT:-3333}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      FOOTBALL_API_KEY: ${FOOTBALL_API_KEY:?FOOTBALL_API_KEY is required}
+      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-example}@db:5432/${POSTGRES_DB:-database}
     ports:
-      - "5432:5432"
+      - "${PORT:-3333}:${PORT:-3333}"
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 300m
+
+  db:
+    image: postgres:16.9-alpine3.22
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-example}
+      POSTGRES_DB: ${POSTGRES_DB:-database}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-database}"]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+    mem_limit: 400m
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    environment:
+      PORT: ${PORT:-3333}
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/templates/default.conf.template:ro
+    depends_on:
+      app:
+        condition: service_started
+    mem_limit: 100m
 
 volumes:
   db_data:
