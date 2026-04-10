@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -10,23 +10,14 @@ const getRequiredEnv = (name) => {
 	return value
 }
 
-const toBoolean = (value, defaultValue) => {
-	if (value == null) return defaultValue
-	return ['1', 'true', 'yes', 'y'].includes(value.toLowerCase())
-}
-
 const testResult = (process.env.TEST_RESULT || 'unknown').toLowerCase()
 const buildResult = (process.env.BUILD_RESULT || 'unknown').toLowerCase()
 const dockerResult = (process.env.DOCKER_RESULT || 'unknown').toLowerCase()
 const deployResult = (process.env.DEPLOY_RESULT || 'unknown').toLowerCase()
 
-const mailServer = getRequiredEnv('MAIL_SERVER')
-const mailPort = Number.parseInt(process.env.MAIL_PORT || '465', 10)
-const mailSecure = toBoolean(process.env.MAIL_SECURE, mailPort === 465)
-const mailUsername = getRequiredEnv('MAIL_USERNAME')
-const mailPassword = getRequiredEnv('MAIL_PASSWORD')
-const mailTo = getRequiredEnv('MAIL_TO')
-const mailFrom = process.env.MAIL_FROM || `World Cup Poll CI <${mailUsername}>`
+const resendApiKey = getRequiredEnv('RESEND_API_KEY')
+const resendTo = getRequiredEnv('RESEND_TO')
+const resendFrom = getRequiredEnv('RESEND_FROM')
 const artifactsDir = process.env.TEST_ARTIFACTS_DIR || '.artifacts/test-reports'
 
 const resolvePipelineStatus = (results) => {
@@ -129,33 +120,27 @@ const attachments = []
 if (fs.existsSync(junitPath)) {
 	attachments.push({
 		filename: 'junit.xml',
-		path: junitPath,
+		content: fs.readFileSync(junitPath).toString('base64'),
+		type: 'application/xml',
 	})
 }
 
 if (fs.existsSync(coverageSummaryPath)) {
 	attachments.push({
 		filename: 'coverage-summary.json',
-		path: coverageSummaryPath,
+		content: fs.readFileSync(coverageSummaryPath).toString('base64'),
+		type: 'application/json',
 	})
 }
 
-const transporter = nodemailer.createTransport({
-	host: mailServer,
-	port: mailPort,
-	secure: mailSecure,
-	auth: {
-		user: mailUsername,
-		pass: mailPassword,
-	},
-})
+const resend = new Resend(resendApiKey)
 
-await transporter.sendMail({
-	from: mailFrom,
-	to: mailTo,
+await resend.emails.send({
+	from: resendFrom,
+	to: resendTo,
 	subject,
 	text: message,
 	attachments,
 })
 
-console.log('Pipeline email notification sent successfully')
+console.log('Resend notification sent successfully')

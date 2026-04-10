@@ -119,7 +119,7 @@ jobs:
           cache: "npm"
 
       - name: Install mail dependency
-        run: npm install nodemailer --no-save
+        run: npm install resend --no-save
 
       - name: Download test artifacts
         if: always()
@@ -131,13 +131,9 @@ jobs:
 
       - name: Send notification script
         env:
-          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
-          MAIL_PORT: ${{ secrets.MAIL_PORT }}
-          MAIL_SECURE: ${{ secrets.MAIL_SECURE }}
-          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
-          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-          MAIL_TO: ${{ secrets.MAIL_TO }}
-          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_TO: ${{ secrets.RESEND_TO }}
+          RESEND_FROM: ${{ secrets.RESEND_FROM }}
           TEST_RESULT: ${{ needs.test.result }}
           BUILD_RESULT: ${{ needs.build.result }}
           DOCKER_RESULT: ${{ needs.docker.result }}
