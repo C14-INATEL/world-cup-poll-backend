@@ -183,19 +183,24 @@ npm run coverage
 
 ## Notificação de pipeline
 
-O workflow de CI/CD envia notificação por e-mail ao final da execução por meio de um script JavaScript em:
+O workflow de CI/CD envia notificação por e-mail ao final da execução em duas etapas:
 
-- `.github/scripts/send-pipeline-notification.mjs`
+- `generate-email-content`: gera o assunto e o corpo HTML em `.github/scripts/generate-pipeline-email-content.mjs`
+- `notification`: envia o e-mail com `dawidd6/action-send-mail@v6`
+
+Arquivos gerados para envio:
+
+- `.artifacts/email/subject.txt`
+- `.artifacts/email/pipeline-notification.html`
 
 Para habilitar, configure no GitHub Actions os secrets abaixo:
 
-- `MAIL_SERVER`: servidor SMTP (ex.: smtp.gmail.com)
-- `MAIL_PORT`: porta SMTP (ex.: 465)
-- `MAIL_SECURE`: `true` para TLS implícito (porta 465), `false` para STARTTLS
+- `MAIL_SERVER_ADDRESS`: servidor SMTP (ex.: `smtp.gmail.com`)
+- `MAIL_SERVER_PORT`: porta SMTP (ex.: `465`)
 - `MAIL_USERNAME`: usuário/e-mail da conta SMTP
 - `MAIL_PASSWORD`: senha da conta SMTP (ou senha de app)
 - `MAIL_TO`: e-mail destinatário
-- `MAIL_FROM` (opcional): remetente exibido. Se ausente, usa `World Cup Poll CI <MAIL_USERNAME>`
+- `MAIL_FROM`: remetente exibido
 
 A mensagem inclui:
 
@@ -205,7 +210,7 @@ A mensagem inclui:
 - resumo de cobertura (lines, statements, functions e branches)
 - branch, commit, ator e link da execução
 
-Além disso, o job de testes publica artifacts no GitHub Actions com:
+Artifacts utilizados no processo:
 
-- `reports/junit.xml`
-- diretório `coverage/` (inclui `coverage-summary.json`, `lcov.info` e HTML)
+- `test-reports`: contém `reports/junit.xml` e `coverage/**`
+- `email-content`: contém `subject.txt` e `pipeline-notification.html`
