@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22"
           cache: "npm"
@@ -41,10 +41,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22"
           cache: "npm"
@@ -61,7 +61,7 @@ jobs:
     if: success()
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Docker Hub login
         uses: docker/login-action@v3
@@ -110,20 +110,31 @@ jobs:
       html_body: ${{ steps.email.outputs.html_body }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+
+      - name: Download test artifacts
+        if: always()
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: test-reports
+          path: .artifacts/test-reports
 
       - name: Generate email
         id: email
         run: |
           node .github/scripts/generate-pipeline-email-content.mjs
 
-          echo "subject<<EOF" >> $GITHUB_OUTPUT
-          cat .artifacts/email/subject.txt >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          DELIM_SUBJECT="SUBJECT_$(date +%s)"
+          DELIM_BODY="BODY_$(date +%s)"
 
-          echo "html_body<<EOF" >> $GITHUB_OUTPUT
+          echo "subject<<$DELIM_SUBJECT" >> $GITHUB_OUTPUT
+          cat .artifacts/email/subject.txt >> $GITHUB_OUTPUT
+          echo "$DELIM_SUBJECT" >> $GITHUB_OUTPUT
+
+          echo "html_body<<$DELIM_BODY" >> $GITHUB_OUTPUT
           cat .artifacts/email/body.html >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "$DELIM_BODY" >> $GITHUB_OUTPUT
 
   notification:
     runs-on: ubuntu-latest
