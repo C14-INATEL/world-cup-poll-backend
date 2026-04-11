@@ -122,6 +122,19 @@ jobs:
 
       - name: Generate email
         id: email
+        env:
+          TEST_RESULT: ${{ needs.test.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          DOCKER_RESULT: ${{ needs.docker.result }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
         run: |
           node .github/scripts/generate-pipeline-email-content.mjs
 
