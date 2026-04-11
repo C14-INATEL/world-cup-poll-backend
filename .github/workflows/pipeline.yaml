@@ -125,16 +125,18 @@ jobs:
         run: |
           node .github/scripts/generate-pipeline-email-content.mjs
 
-          DELIM_SUBJECT="SUBJECT_$(date +%s)"
-          DELIM_BODY="BODY_$(date +%s)"
+          DELIM_SUBJECT="SUBJECT_$(uuidgen)"
+          DELIM_BODY="BODY_$(uuidgen)"
 
-          echo "subject<<$DELIM_SUBJECT" >> $GITHUB_OUTPUT
-          cat .artifacts/email/subject.txt >> $GITHUB_OUTPUT
-          echo "$DELIM_SUBJECT" >> $GITHUB_OUTPUT
+          {
+            echo "subject<<$DELIM_SUBJECT"
+            printf "%s\n" "$(cat .artifacts/email/subject.txt)"
+            echo "$DELIM_SUBJECT"
 
-          echo "html_body<<$DELIM_BODY" >> $GITHUB_OUTPUT
-          cat .artifacts/email/body.html >> $GITHUB_OUTPUT
-          echo "$DELIM_BODY" >> $GITHUB_OUTPUT
+            echo "html_body<<$DELIM_BODY"
+            printf "%s\n" "$(cat .artifacts/email/body.html)"
+            echo "$DELIM_BODY"
+          } >> $GITHUB_OUTPUT
 
   notification:
     runs-on: ubuntu-latest
