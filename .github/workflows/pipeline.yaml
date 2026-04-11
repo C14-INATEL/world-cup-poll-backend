@@ -22,7 +22,19 @@ jobs:
         run: npm ci
 
       - name: Run unit tests
-        run: npx vitest run
+        run: |
+          mkdir -p reports
+          npx vitest run --coverage --reporter=junit --outputFile=reports/junit.xml
+
+      - name: Upload test and coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            reports/junit.xml
+            coverage/**
+          if-no-files-found: warn
 
   build:
     name: Build
@@ -45,7 +57,7 @@ jobs:
 
   docker:
     runs-on: ubuntu-latest
-    needs: [test, build]
+    needs: [build]
     if: success()
 
     steps:
@@ -89,37 +101,44 @@ jobs:
             docker compose up -d --remove-orphans
             docker image prune -f
 
-  # Secrets necessários no repositório:
-  #   MAIL_SERVER   → ex: smtp.gmail.com
-  #   MAIL_USERNAME → seu e-mail
-  #   MAIL_PASSWORD → senha de app do Gmail
-  #   MAIL_TO       → destinatário
-
-  notification:
-    name: Notification
-    runs-on: ubuntu-latest
-    needs: [test, build, docker]
+  generate-email-content:
+    needs: [test, build, docker, deploy]
     if: always()
+    runs-on: ubuntu-latest
+    outputs:
+      subject: ${{ steps.email.outputs.subject }}
+      html_body: ${{ steps.email.outputs.html_body }}
 
     steps:
-      - name: Send e-mail notification
-        uses: dawidd6/action-send-mail@v3
+      - uses: actions/checkout@v4
+
+      - name: Generate email
+        id: email
+        run: |
+          node .github/scripts/generate-pipeline-email-content.mjs
+
+          echo "subject<<EOF" >> $GITHUB_OUTPUT
+          cat .artifacts/email/subject.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          echo "html_body<<EOF" >> $GITHUB_OUTPUT
+          cat .artifacts/email/body.html >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+  notification:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: generate-email-content
+
+    steps:
+      - name: Send email
+        uses: dawidd6/action-send-mail@v6
         with:
-          server_address: ${{ secrets.MAIL_SERVER }}
-          server_port: 465
-          secure: true
+          subject: ${{ needs.generate-email-content.outputs.subject }}
+          html_body: ${{ needs.generate-email-content.outputs.html_body }}
+          server_address: ${{ secrets.MAIL_SERVER_ADDRESS }}
+          server_port: ${{ secrets.MAIL_SERVER_PORT }}
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
           to: ${{ secrets.MAIL_TO }}
-          from: World Cup Poll CI <${{ secrets.MAIL_USERNAME }}>
-          subject: "[${{ job.status == 'success' && 'OK' || 'FALHA' }}] Pipeline - ${{ github.ref_name }} #${{ github.run_number }}"
-          body: |
-            Repositório : ${{ github.repository }}
-            Branch      : ${{ github.ref_name }}
-            Commit      : ${{ github.sha }}
-            Executado por: ${{ github.actor }}
-
-            Status: ${{ job.status }}
-
-            Veja a execução completa em:
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          from: ${{ secrets.MAIL_FROM }}

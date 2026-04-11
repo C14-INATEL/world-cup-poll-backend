@@ -91,18 +91,18 @@ Serviços definidos:
 
 ## Scripts
 
-| Script | Descrição |
-| --- | --- |
-| `npm run dev` | Sobe a API em modo desenvolvimento com watch |
-| `npm run build` | Gera build de produção em `dist` |
-| `npm run start` | Executa a API a partir do build |
-| `npm run migrate:prod` | Executa migrações usando build de produção |
-| `npm run seed:games` | Busca/atualiza jogos via script |
-| `npm run test` | Executa testes com Vitest |
-| `npm run coverage` | Executa testes com cobertura |
-| `npm run format` | Aplica formatação e lint com Biome |
-| `npm run format:check` | Verifica formatação/lint sem alterar arquivos |
-| `npm run generate-migration -- --name=<nome>` | Gera migration SQL com nome customizado |
+| Script                                        | Descrição                                     |
+| --------------------------------------------- | --------------------------------------------- |
+| `npm run dev`                                 | Sobe a API em modo desenvolvimento com watch  |
+| `npm run build`                               | Gera build de produção em `dist`              |
+| `npm run start`                               | Executa a API a partir do build               |
+| `npm run migrate:prod`                        | Executa migrações usando build de produção    |
+| `npm run seed:games`                          | Busca/atualiza jogos via script               |
+| `npm run test`                                | Executa testes com Vitest                     |
+| `npm run coverage`                            | Executa testes com cobertura                  |
+| `npm run format`                              | Aplica formatação e lint com Biome            |
+| `npm run format:check`                        | Verifica formatação/lint sem alterar arquivos |
+| `npm run generate-migration -- --name=<nome>` | Gera migration SQL com nome customizado       |
 
 ## Rotas principais
 
@@ -180,3 +180,37 @@ Executar cobertura:
 ```bash
 npm run coverage
 ```
+
+## Notificação de pipeline
+
+O workflow de CI/CD envia notificação por e-mail ao final da execução em duas etapas:
+
+- `generate-email-content`: gera o assunto e o corpo HTML em `.github/scripts/generate-pipeline-email-content.mjs`
+- `notification`: envia o e-mail com `dawidd6/action-send-mail@v6`
+
+Arquivos gerados para envio:
+
+- `.artifacts/email/subject.txt`
+- `.artifacts/email/pipeline-notification.html`
+
+Para habilitar, configure no GitHub Actions os secrets abaixo:
+
+- `MAIL_SERVER_ADDRESS`: servidor SMTP (ex.: `smtp.gmail.com`)
+- `MAIL_SERVER_PORT`: porta SMTP (ex.: `465`)
+- `MAIL_USERNAME`: usuário/e-mail da conta SMTP
+- `MAIL_PASSWORD`: senha da conta SMTP (ou senha de app)
+- `MAIL_TO`: e-mail destinatário
+- `MAIL_FROM`: remetente exibido
+
+A mensagem inclui:
+
+- status final do pipeline
+- resultados de `test`, `build`, `docker` e `deploy`
+- resumo dos testes (total, aprovados, falhas, ignorados e duração)
+- resumo de cobertura (lines, statements, functions e branches)
+- branch, commit, ator e link da execução
+
+Artifacts utilizados no processo:
+
+- `test-reports`: contém `reports/junit.xml` e `coverage/**`
+- `email-content`: contém `subject.txt` e `pipeline-notification.html`
