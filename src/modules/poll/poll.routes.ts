@@ -12,4 +12,6 @@ export async function PollRoutes(app: FastifyInstance) {
 	app.post('/poll/create', pollController.create.bind(pollController))
 	app.get('/poll/:code', pollController.find.bind(pollController))
 	app.get('/polls/user', pollController.findAllUserPolls.bind(pollController))
+	app.patch('/poll/:id', pollController.update.bind(pollController))
+	app.delete('/poll/:id', pollController.delete.bind(pollController))
 }
