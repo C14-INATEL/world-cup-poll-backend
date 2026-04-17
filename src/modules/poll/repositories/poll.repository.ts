@@ -69,6 +69,23 @@ export class PollRepository implements PollRepositoryInterface {
 			.then((res) => res[0] || null)
 	}
 
+	async updateTitle(id: string, title: string) {
+		return db
+			.update(pollTable)
+			.set({ title })
+			.where(eq(pollTable.id, id))
+			.returning()
+			.then((res) => res[0])
+	}
+
+	async delete(id: string) {
+		return db
+			.delete(pollTable)
+			.where(eq(pollTable.id, id))
+			.returning()
+			.then((res) => res[0])
+	}
+
 	async findAllByUserId(userId: string) {
 		return db
 			.select({

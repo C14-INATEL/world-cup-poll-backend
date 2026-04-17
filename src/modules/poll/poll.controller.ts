@@ -41,4 +41,33 @@ export class PollController {
 
 		reply.status(200).send(polls)
 	}
+
+	async update(request: FastifyRequest, reply: FastifyReply) {
+		const paramsSchema = z.object({
+			id: z.string('ID do bolão é obrigatório'),
+		})
+
+		const bodySchema = z.object({
+			title: z.string().min(1, 'O título é obrigatório'),
+		})
+
+		const { id } = paramsSchema.parse(request.params)
+		const { title } = bodySchema.parse(request.body)
+
+		const poll = await this.pollService.updateTitle(id, title, request.userId)
+
+		reply.status(200).send(poll)
+	}
+
+	async delete(request: FastifyRequest, reply: FastifyReply) {
+		const paramsSchema = z.object({
+			id: z.string('ID do bolão é obrigatório'),
+		})
+
+		const { id } = paramsSchema.parse(request.params)
+
+		await this.pollService.delete(id, request.userId)
+
+		reply.status(204).send()
+	}
 }
