@@ -1,5 +1,5 @@
 import { and, eq, gt, sql } from 'drizzle-orm'
-import { db } from '@/infrastructure/db'
+import type { AppDb } from '@/infrastructure/db'
 import {
 	InviteInsert,
 	InviteStatus,
@@ -9,7 +9,9 @@ import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 import { InviteRepositoryInterface } from '@/modules/invite/repositories/invite.interface'
 
 export class InviteRepository implements InviteRepositoryInterface {
-	async createInvite(invite: InviteInsert, executor: DbExecutor = db) {
+	constructor(private readonly db: AppDb) {}
+
+	async createInvite(invite: InviteInsert, executor: DbExecutor = this.db) {
 		return executor
 			.insert(inviteTable)
 			.values(invite)
@@ -17,7 +19,7 @@ export class InviteRepository implements InviteRepositoryInterface {
 			.then((res) => res[0])
 	}
 
-	async findInviteById(id: string, executor: DbExecutor = db) {
+	async findInviteById(id: string, executor: DbExecutor = this.db) {
 		return executor
 			.select()
 			.from(inviteTable)
@@ -26,13 +28,16 @@ export class InviteRepository implements InviteRepositoryInterface {
 	}
 
 	async findInvitesByUserId(userId: string) {
-		return db.select().from(inviteTable).where(eq(inviteTable.invitedUserId, userId))
+		return this.db
+			.select()
+			.from(inviteTable)
+			.where(eq(inviteTable.invitedUserId, userId))
 	}
 
 	async findExistentInvite(
 		userId: string,
 		pollId: string,
-		executor: DbExecutor = db,
+		executor: DbExecutor = this.db,
 	) {
 		return executor
 			.select()
@@ -51,7 +56,7 @@ export class InviteRepository implements InviteRepositoryInterface {
 	async updateInviteStatus(
 		id: string,
 		status: InviteStatus,
-		executor: DbExecutor = db,
+		executor: DbExecutor = this.db,
 	) {
 		return executor
 			.update(inviteTable)

@@ -1,11 +1,13 @@
 import { eq } from 'drizzle-orm'
-import { db } from '@/infrastructure/db'
+import type { AppDb } from '@/infrastructure/db'
 import { GameInsert, gameTable } from '@/infrastructure/db/schemas'
 import { GameRepositoryInterface } from './game.interface'
 
 export class GameRepository implements GameRepositoryInterface {
+	constructor(private readonly db: AppDb) {}
+
 	async create(data: GameInsert) {
-		return db
+		return this.db
 			.insert(gameTable)
 			.values(data)
 			.returning()
@@ -13,11 +15,11 @@ export class GameRepository implements GameRepositoryInterface {
 	}
 
 	async findAll() {
-		return db.select().from(gameTable)
+		return this.db.select().from(gameTable)
 	}
 
 	async findById(id: string) {
-		return db
+		return this.db
 			.select()
 			.from(gameTable)
 			.where(eq(gameTable.id, id))
@@ -25,7 +27,7 @@ export class GameRepository implements GameRepositoryInterface {
 	}
 
 	async findByApiId(apiId: number) {
-		return db
+		return this.db
 			.select()
 			.from(gameTable)
 			.where(eq(gameTable.apiId, apiId))
@@ -33,7 +35,7 @@ export class GameRepository implements GameRepositoryInterface {
 	}
 
 	async updateByApiId(data: { apiId: number; game: Partial<GameInsert> }) {
-		return db
+		return this.db
 			.update(gameTable)
 			.set(data.game)
 			.where(eq(gameTable.apiId, data.apiId))
@@ -42,7 +44,7 @@ export class GameRepository implements GameRepositoryInterface {
 	}
 
 	async update(data: { id: string; game: Partial<GameInsert> }) {
-		return db
+		return this.db
 			.update(gameTable)
 			.set(data.game)
 			.where(eq(gameTable.id, data.id))

@@ -1,16 +1,6 @@
-import { migrate } from 'drizzle-orm/postgres-js/migrator'
-import { db } from '.'
+import { migrate } from 'drizzle-orm/node-postgres/migrator'
+import { type AppDb } from '.'
 
-async function runMigrations() {
-	await migrate(db, { migrationsFolder: 'drizzle' })
+export async function runMigrations(appDb: AppDb) {
+	await migrate(appDb, { migrationsFolder: 'drizzle' })
 }
-
-runMigrations()
-	.then(() => {
-		console.log('Migrations completed successfully.')
-		process.exit(0)
-	})
-	.catch((error) => {
-		console.error('Error running migrations:', error)
-		process.exit(1)
-	})

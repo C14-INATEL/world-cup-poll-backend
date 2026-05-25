@@ -1,4 +1,15 @@
-import { drizzle } from 'drizzle-orm/node-postgres'
-import { env } from '@/config/env'
+import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres'
+import { Pool } from 'pg'
 
-export const db = drizzle(env.DATABASE_URL)
+export type AppDb = NodePgDatabase
+
+export function createDb(databaseUrl: string) {
+	const pool = new Pool({
+		connectionString: databaseUrl,
+	})
+
+	return {
+		pool,
+		db: drizzle(pool),
+	}
+}

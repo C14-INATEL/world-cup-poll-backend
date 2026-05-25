@@ -1,12 +1,15 @@
 import { FastifyInstance } from 'fastify'
-import { authMiddleware } from '@/core/middlewares/auth-middleware'
+import type { AuthMiddleware } from '@/core/middlewares/auth-middleware'
+import type { AppDb } from '@/infrastructure/db'
 import { makeUserService } from './services/make-user.service'
 import { UserController } from './user.controller'
 
-const userService = makeUserService()
-const userController = new UserController(userService)
+export async function UserRoutes(
+	app: FastifyInstance,
+	{ db, authMiddleware }: { db: AppDb; authMiddleware: AuthMiddleware },
+) {
+	const userController = new UserController(makeUserService(db))
 
-export async function UserRoutes(app: FastifyInstance) {
 	app.addHook('preHandler', authMiddleware)
 
 	app.get('/me', userController.getProfile.bind(userController))

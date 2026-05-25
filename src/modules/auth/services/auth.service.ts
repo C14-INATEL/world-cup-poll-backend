@@ -1,6 +1,6 @@
-import { BadRequestError, UnauthorizedError } from '@/core/errors/error-handler'
+import { BadRequestError } from '@/core/errors/error-handler'
 import { compareHashPassword } from '@/core/utils/password'
-import { UnitOfWork } from '@/infrastructure/db/unit-of-work'
+import type { UnitOfWorkLike } from '@/infrastructure/db/unit-of-work'
 import { SessionService } from '@/modules/session/services/session.service'
 import { UserService } from '@/modules/user/services/user.service'
 
@@ -8,7 +8,7 @@ export class AuthService {
 	constructor(
 		private userService: UserService,
 		private sessionService: SessionService,
-		private unitOfWork: UnitOfWork,
+		private unitOfWork: UnitOfWorkLike,
 	) {}
 
 	async login(data: { email: string; password: string }) {

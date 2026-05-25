@@ -1,5 +1,5 @@
 import { and, eq, isNotNull } from 'drizzle-orm'
-import { db } from '@/infrastructure/db'
+import type { AppDb } from '@/infrastructure/db'
 import {
 	gameTable,
 	guessTable,
@@ -12,8 +12,10 @@ import {
 } from './ranking.interface'
 
 export class RankingRepository implements RankingRepositoryInterface {
+	constructor(private readonly db: AppDb) {}
+
 	async findParticipantsWithGuessesAndResults(pollId: string) {
-		const rows = await db
+		const rows = await this.db
 			.select({
 				participantId: participantTable.id,
 				userId: participantTable.userId,
