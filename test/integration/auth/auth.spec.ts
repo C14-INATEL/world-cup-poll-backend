@@ -9,6 +9,7 @@ import {
 	expect,
 	it,
 } from 'vitest'
+import { isUniqueConstraintError } from '@/core/errors/unique-constraint-error'
 import { AppDb, createDb } from '@/infrastructure/db'
 import { runMigrations } from '@/infrastructure/db/migrate'
 import { AuthService } from '@/modules/auth/services/auth.service'
@@ -18,7 +19,7 @@ import { SessionService } from '@/modules/session/services/session.service'
 import { setupTestDatabase, teardownTestDatabase } from '../helpers/setup-test-db'
 import { truncateTables } from '../helpers/truncate-tables'
 
-describe('integration - login service', () => {
+describe('integration - auth services', () => {
 	let testDb: AppDb
 	let testPoll: Pool
 
@@ -111,5 +112,53 @@ describe('integration - login service', () => {
 				password: 'wrong-password',
 			}),
 		).rejects.toThrow('Email ou senha incorretos')
+	})
+
+	it('should register successfully and persist session', async () => {
+		const { user, session } = await authService.register({
+			email: 'jane@email.com',
+			password: 'abcdef',
+			name: 'Jane Doe',
+		})
+
+		expect(user.id).toBeDefined()
+
+		const sessionInDb = await sessionService.validateSession(session.sessionToken)
+
+		expect(sessionInDb).toBeDefined()
+		expect(sessionInDb?.userId).toBe(user.id)
+	})
+
+	it('should throw when registering with duplicate email', async () => {
+		await createRealUserFactory(testDb, {
+			email: 'duplicate@example.com',
+			password: '123456',
+		})
+
+		await expect(
+			authService.register({
+				email: 'duplicate@example.com',
+				password: 'abcdef',
+				name: 'Duplicate',
+			}),
+		).rejects.toSatisfy(isUniqueConstraintError)
+	})
+
+	it('should logout and invalidate the session', async () => {
+		await createRealUserFactory(testDb, {
+			email: 'logout@example.com',
+			password: '123456',
+		})
+
+		const result = await authService.login({
+			email: 'logout@example.com',
+			password: '123456',
+		})
+
+		await authService.logout(result.session.sessionToken)
+
+		await expect(() =>
+			sessionService.validateSession(result.session.sessionToken),
+		).rejects.toThrow('Usuário não autenticado')
 	})
 })
