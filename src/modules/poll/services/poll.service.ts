@@ -36,6 +36,28 @@ export class PollService {
 		return poll
 	}
 
+	async joinByCode(code: string, userId: string) {
+		const poll = await this.pollRepository.findByCode(code)
+
+		if (!poll) {
+			throw new NotFoundError('Bolão não encontrado')
+		}
+
+		const participant =
+			await this.participantRepository.findByUserIdAndPollId(userId, poll.id)
+
+		if (participant) {
+			throw new BadRequestError('Você já participa deste grupo')
+		}
+
+		await this.participantRepository.add({
+			pollId: poll.id,
+			userId,
+		})
+
+		return this.pollRepository.findByCodeAndUserId(code, userId)
+	}
+
 	async findAllByUserId(userId: string) {
 		return this.pollRepository.findAllByUserId(userId)
 	}
