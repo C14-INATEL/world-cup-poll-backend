@@ -1,7 +1,7 @@
 import { isBefore } from 'date-fns'
 import { BadRequestError } from '@/core/errors/error-handler'
 import { InviteInsert, InviteStatus } from '@/infrastructure/db/schemas/invite'
-import { UnitOfWork } from '@/infrastructure/db/unit-of-work'
+import type { UnitOfWorkLike } from '@/infrastructure/db/unit-of-work'
 import { InviteRepository } from '@/modules/invite/repositories/invite.repository'
 import { ParticipantRepository } from '@/modules/participant/repositories/participant.repository'
 
@@ -9,7 +9,7 @@ export class InviteService {
 	constructor(
 		private readonly inviteRepository: InviteRepository,
 		private readonly participantRepository: ParticipantRepository,
-		private readonly unitOfWork: UnitOfWork,
+		private readonly unitOfWork: UnitOfWorkLike,
 	) {}
 
 	async create(data: Omit<InviteInsert, 'expiresAt'>) {

@@ -1,4 +1,8 @@
-import { BadRequestError, NotFoundError, UnauthorizedError } from '@/core/errors/error-handler'
+import {
+	BadRequestError,
+	NotFoundError,
+	UnauthorizedError,
+} from '@/core/errors/error-handler'
 import { PollInsert } from '@/infrastructure/db/schemas'
 import { ParticipantRepository } from '@/modules/participant/repositories/participant.repository'
 import { PollRepository } from '@/modules/poll/repositories/poll.repository'

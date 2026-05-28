@@ -1,11 +1,14 @@
+import { env } from '@/config/env'
 import logger from '@/config/logger'
+import { createDb } from '@/infrastructure/db'
 import { getAllMatchesFromApiJob } from '@/infrastructure/jobs/get-games.job'
 
 async function main() {
 	logger.info('[SEED] Starting games seed by calling getAllMatchesFromApiJob')
 
 	try {
-		await getAllMatchesFromApiJob()
+		const { db } = createDb(env.DATABASE_URL)
+		await getAllMatchesFromApiJob(db)
 		logger.info('[SEED] Games seed finished successfully')
 	} catch (error) {
 		logger.error({

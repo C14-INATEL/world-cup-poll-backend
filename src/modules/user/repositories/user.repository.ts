@@ -1,11 +1,13 @@
 import { and, eq } from 'drizzle-orm'
-import { db } from '@/infrastructure/db'
+import type { AppDb } from '@/infrastructure/db'
 import { UserTypeInsert, userTable } from '@/infrastructure/db/schemas'
 import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 import { UserRepositoryInterface } from './user.interface'
 
 export class UserRepository implements UserRepositoryInterface {
-	async create(data: UserTypeInsert, executor: DbExecutor = db) {
+	constructor(private readonly db: AppDb) {}
+
+	async create(data: UserTypeInsert, executor: DbExecutor = this.db) {
 		return executor
 			.insert(userTable)
 			.values(data)
@@ -18,7 +20,7 @@ export class UserRepository implements UserRepositoryInterface {
 	}
 
 	async findByEmail(email: string) {
-		return db
+		return this.db
 			.select()
 			.from(userTable)
 			.where(eq(userTable.email, email))
@@ -33,7 +35,7 @@ export class UserRepository implements UserRepositoryInterface {
 		email: string
 		password: string
 	}) {
-		return db
+		return this.db
 			.select({
 				id: userTable.id,
 				name: userTable.name,
@@ -46,7 +48,7 @@ export class UserRepository implements UserRepositoryInterface {
 	}
 
 	async findById(id: string) {
-		return db
+		return this.db
 			.select({
 				id: userTable.id,
 				name: userTable.name,

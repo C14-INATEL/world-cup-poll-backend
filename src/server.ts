@@ -1,5 +1,6 @@
 import { buildApp } from '@/app'
 import { env } from '@/config/env'
+import { createDb } from '@/infrastructure/db'
 
 process.on('uncaughtException', (err) => {
 	console.error('Uncaught Exception:', err)
@@ -11,7 +12,9 @@ process.on('unhandledRejection', (reason, promise) => {
 	process.exit(1)
 })
 
-const fastify = buildApp()
+const { db } = createDb(env.DATABASE_URL)
+
+const fastify = buildApp(db)
 
 fastify
 	.listen({ port: env.PORT, host: '0.0.0.0' })

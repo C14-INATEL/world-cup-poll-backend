@@ -1,12 +1,15 @@
 import { FastifyInstance } from 'fastify'
-import { authMiddleware } from '@/core/middlewares/auth-middleware'
+import type { AuthMiddleware } from '@/core/middlewares/auth-middleware'
+import type { AppDb } from '@/infrastructure/db'
 import { InviteController } from '@/modules/invite/invite.controller'
 import { makeInviteService } from '@/modules/invite/services/make-invite.service'
 
-const inviteService = makeInviteService()
-const inviteController = new InviteController(inviteService)
+export async function InviteRoutes(
+	app: FastifyInstance,
+	{ db, authMiddleware }: { db: AppDb; authMiddleware: AuthMiddleware },
+) {
+	const inviteController = new InviteController(makeInviteService(db))
 
-export async function InviteRoutes(app: FastifyInstance) {
 	app.addHook('preHandler', authMiddleware)
 
 	app.post('/poll/invite', inviteController.create.bind(inviteController))

@@ -1,13 +1,15 @@
 import { eq } from 'drizzle-orm'
-import { db } from '@/infrastructure/db'
+import type { AppDb } from '@/infrastructure/db'
 import { UserSessionInsert, userSessionsTable } from '@/infrastructure/db/schemas'
 import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 import { SessionRepositoryInterface } from './session.interface'
 
 export class SessionRepository implements SessionRepositoryInterface {
+	constructor(private readonly db: AppDb) {}
+
 	async create(
 		{ userId, sessionToken, expiresAt }: UserSessionInsert,
-		executor: DbExecutor = db,
+		executor: DbExecutor = this.db,
 	) {
 		return executor
 			.insert(userSessionsTable)
@@ -21,7 +23,7 @@ export class SessionRepository implements SessionRepositoryInterface {
 	}
 
 	async findByToken(sessionToken: string) {
-		return db
+		return this.db
 			.select()
 			.from(userSessionsTable)
 			.where(eq(userSessionsTable.sessionToken, sessionToken))
@@ -29,7 +31,7 @@ export class SessionRepository implements SessionRepositoryInterface {
 			.then((res) => res[0])
 	}
 
-	async delete(tokenId: string, executor: DbExecutor = db) {
+	async delete(tokenId: string, executor: DbExecutor = this.db) {
 		await executor
 			.delete(userSessionsTable)
 			.where(eq(userSessionsTable.sessionToken, tokenId))
