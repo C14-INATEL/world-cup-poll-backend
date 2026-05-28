@@ -1,9 +1,17 @@
 export function isUniqueConstraintError(err: unknown): boolean {
-	if (typeof err !== 'object' || err === null) {
-		return false
+	if (
+		typeof err === 'object' &&
+		err !== null &&
+		'cause' in err &&
+		isUniqueConstraintError((err as any).cause)
+	) {
+		return true
 	}
 
-	const error = err as any
-
-	return error.code === '23505' || error.cause?.code === '23505'
+	return (
+		typeof err === 'object' &&
+		err !== null &&
+		'code' in err &&
+		(err as any).code === '23505'
+	)
 }

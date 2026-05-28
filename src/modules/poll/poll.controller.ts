@@ -36,6 +36,18 @@ export class PollController {
 		reply.status(200).send(poll)
 	}
 
+	async join(request: FastifyRequest, reply: FastifyReply) {
+		const bodySchema = z.object({
+			code: z.string().length(10, 'Código inválido'),
+		})
+
+		const { code } = bodySchema.parse(request.body)
+
+		const poll = await this.pollService.joinByCode(code, request.userId)
+
+		reply.status(201).send(poll)
+	}
+
 	async findAllUserPolls(request: FastifyRequest, reply: FastifyReply) {
 		const polls = await this.pollService.findAllByUserId(request.userId)
 

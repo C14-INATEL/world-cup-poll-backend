@@ -133,6 +133,98 @@ describe('PollService', () => {
 		})
 	})
 
+	describe('joinByCode', () => {
+		test('deve lançar NotFoundError se o bolão não existe', async () => {
+			const pollRepository = {
+				findByCode: vi.fn().mockResolvedValue(null),
+			}
+
+			const participantRepository = {
+				findByUserIdAndPollId: vi.fn(),
+				add: vi.fn(),
+			}
+
+			const service = new PollService(
+				pollRepository as any,
+				participantRepository as any,
+			)
+
+			await expect(service.joinByCode('ABC123DEF4', 'user-2')).rejects.toThrow(
+				NotFoundError,
+			)
+
+			expect(participantRepository.findByUserIdAndPollId).not.toHaveBeenCalled()
+			expect(participantRepository.add).not.toHaveBeenCalled()
+		})
+
+		test('deve lançar BadRequestError se o usuário já participa do bolão', async () => {
+			const poll = makePoll({ id: 'poll-1' })
+
+			const pollRepository = {
+				findByCode: vi.fn().mockResolvedValue(poll),
+			}
+
+			const participantRepository = {
+				findByUserIdAndPollId: vi.fn().mockResolvedValue({
+					id: 'participant-1',
+					pollId: poll.id,
+					userId: 'user-2',
+				}),
+				add: vi.fn(),
+			}
+
+			const service = new PollService(
+				pollRepository as any,
+				participantRepository as any,
+			)
+
+			await expect(service.joinByCode(poll.code, 'user-2')).rejects.toThrow(
+				BadRequestError,
+			)
+
+			expect(participantRepository.add).not.toHaveBeenCalled()
+		})
+
+		test('deve adicionar o usuário como participante quando o código existe', async () => {
+			const poll = makePoll({ id: 'poll-1', code: 'ABC123DEF4' })
+			const pollDetails = {
+				...poll,
+				ownerName: 'Dono',
+			}
+
+			const pollRepository = {
+				findByCode: vi.fn().mockResolvedValue(poll),
+				findByCodeAndUserId: vi.fn().mockResolvedValue(pollDetails),
+			}
+
+			const participantRepository = {
+				findByUserIdAndPollId: vi.fn().mockResolvedValue(null),
+				add: vi.fn().mockResolvedValue({
+					id: 'participant-2',
+					pollId: poll.id,
+					userId: 'user-2',
+				}),
+			}
+
+			const service = new PollService(
+				pollRepository as any,
+				participantRepository as any,
+			)
+
+			const result = await service.joinByCode(poll.code, 'user-2')
+
+			expect(participantRepository.add).toHaveBeenCalledWith({
+				pollId: poll.id,
+				userId: 'user-2',
+			})
+			expect(pollRepository.findByCodeAndUserId).toHaveBeenCalledWith(
+				poll.code,
+				'user-2',
+			)
+			expect(result).toEqual(pollDetails)
+		})
+	})
+
 	describe('updateTitle', () => {
 		test('deve lançar NotFoundError se o bolão não existe', async () => {
 			const pollRepository = {
