@@ -42,10 +42,8 @@ POSTGRES_DB=database
 POSTGRES_PORT=5432
 
 # URL usada pela aplicação e pelo Drizzle
-DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+DATABASE_URL=postgres://postgres:example@localhost:5432/database
 ```
-
-> Observação: `JWT_SECRET` é obrigatória para autenticação e não está no `.env.example` atual.
 
 ## Como rodar localmente (desenvolvimento)
 
