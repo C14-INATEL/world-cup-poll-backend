@@ -11,7 +11,6 @@ import {
 } from 'vitest'
 import { isUniqueConstraintError } from '@/core/errors/unique-constraint-error'
 import { AppDb, createDb } from '@/infrastructure/db'
-import { runMigrations } from '@/infrastructure/db/migrate'
 import { AuthService } from '@/modules/auth/services/auth.service'
 import { makeAuthService } from '@/modules/auth/services/make-auth.service'
 import { makeSessionService } from '@/modules/session/services/make-session.service'
@@ -27,14 +26,10 @@ describe('integration - auth services', () => {
 	let sessionService: SessionService
 
 	beforeAll(async () => {
-		const databaseUrl = await setupTestDatabase()
-
-		const { db, pool } = createDb(databaseUrl)
+		const { db, pool } = await setupTestDatabase()
 
 		testDb = db
 		testPoll = pool
-
-		await runMigrations(testDb)
 	})
 
 	afterAll(async () => {

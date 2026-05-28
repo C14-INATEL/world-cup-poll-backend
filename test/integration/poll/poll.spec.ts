@@ -13,7 +13,6 @@ import {
 } from 'vitest'
 import { BadRequestError } from '@/core/errors/error-handler'
 import { AppDb, createDb } from '@/infrastructure/db'
-import { runMigrations } from '@/infrastructure/db/migrate'
 import { UserType } from '@/infrastructure/db/schemas'
 import { makePollService } from '@/modules/poll/services/make-poll.service'
 import { PollService } from '@/modules/poll/services/poll.service'
@@ -28,14 +27,10 @@ describe('integration - poll services', () => {
 	let user: UserType
 
 	beforeAll(async () => {
-		const databaseUrl = await setupTestDatabase()
-
-		const { db, pool } = createDb(databaseUrl)
+		const { db, pool } = await setupTestDatabase()
 
 		testDb = db
 		testPoll = pool
-
-		await runMigrations(testDb)
 	})
 
 	afterAll(async () => {
