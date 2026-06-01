@@ -40,6 +40,7 @@ const buildApp = (db: AppDb) => {
 				}
 				cb(new Error('Not allowed'), false)
 			}),
+		methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 	})
 
 	app.setErrorHandler(errorHandler)

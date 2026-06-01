@@ -24,5 +24,7 @@ export async function GuessRoutes(
 		'/guess/participant/:participantId',
 		guessController.findByParticipantId.bind(guessController),
 	)
+	app.get('/guess/user', guessController.findByUser.bind(guessController))
 	app.get('/guess/game/:gameId', guessController.findByGameId.bind(guessController))
+	app.get('/polls/:pollId/guesses', guessController.findByPollId.bind(guessController))
 }

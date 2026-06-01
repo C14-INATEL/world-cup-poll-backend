@@ -1,3 +1,4 @@
+import { NotFoundError } from '@/core/errors/error-handler'
 import { hashPassword } from '@/core/utils/password'
 import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 import { UserRepository } from '@/modules/user/repositories/user.repository'
@@ -27,5 +28,15 @@ export class UserService {
 
 	async findUserById(id: string) {
 		return await this.userRepository.findById(id)
+	}
+
+	async updateProfile(id: string, data: { name: string; email: string }) {
+		const user = await this.userRepository.updateProfile(id, data)
+
+		if (!user) {
+			throw new NotFoundError('Usuario nao encontrado')
+		}
+
+		return user
 	}
 }
