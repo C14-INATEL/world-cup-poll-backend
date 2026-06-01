@@ -20,5 +20,6 @@ export async function GuessRoutes(app: FastifyInstance) {
 		'/guess/participant/:participantId',
 		guessController.findByParticipantId.bind(guessController),
 	)
+	app.get('/guess/user', guessController.findByUser.bind(guessController))
 	app.get('/guess/game/:gameId', guessController.findByGameId.bind(guessController))
 }

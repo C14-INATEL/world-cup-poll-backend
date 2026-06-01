@@ -10,4 +10,5 @@ export async function UserRoutes(app: FastifyInstance) {
 	app.addHook('preHandler', authMiddleware)
 
 	app.get('/me', userController.getProfile.bind(userController))
+	app.patch('/me', userController.updateProfile.bind(userController))
 }

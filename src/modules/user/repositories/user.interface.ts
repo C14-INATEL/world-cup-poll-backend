@@ -16,4 +16,8 @@ export interface UserRepositoryInterface {
 		password: string
 	}): Promise<UserPublicData | null>
 	findById(id: string): Promise<UserPublicData | null>
+	updateProfile(
+		id: string,
+		data: Pick<UserPublicData, 'name' | 'email'>,
+	): Promise<UserPublicData | null>
 }

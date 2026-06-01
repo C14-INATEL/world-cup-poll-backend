@@ -11,8 +11,13 @@ describe('PollService', () => {
 
   beforeEach(() => {
     // 1. Criamos os Mocks dos repositórios
-    pollRepositoryMock = new PollRepository() as vi.Mocked<PollRepository>
-    participantRepositoryMock = new ParticipantRepository() as vi.Mocked<ParticipantRepository>
+    pollRepositoryMock = {
+      create: vi.fn(),
+      findByCode: vi.fn(),
+    } as unknown as PollRepository
+    participantRepositoryMock = {
+      add: vi.fn(),
+    } as unknown as ParticipantRepository
 
     // 2. Instanciamos o serviço passando os mocks (Injeção de Dependência)
     pollService = new PollService(pollRepositoryMock, participantRepositoryMock)
@@ -43,6 +48,7 @@ describe('PollService', () => {
 
     // Mockando: Dizemos que o repositório ENCONTROU um bolão com esse código
     vi.spyOn(pollRepositoryMock, 'findByCode').mockResolvedValue({ id: '123' } as any)
+    vi.spyOn(pollRepositoryMock, 'create')
 
     // Validação: Esperamos que o serviço lance um BadRequestError
     await expect(pollService.create(pollData as any)).rejects.toThrow(BadRequestError)

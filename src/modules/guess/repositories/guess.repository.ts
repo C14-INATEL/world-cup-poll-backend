@@ -1,6 +1,12 @@
-import { and, eq } from 'drizzle-orm'
+import { and, desc, eq, sql } from 'drizzle-orm'
 import { db } from '@/infrastructure/db'
-import { GuessInsert, guessTable } from '@/infrastructure/db/schemas'
+import {
+	gameTable,
+	GuessInsert,
+	guessTable,
+	participantTable,
+	pollTable,
+} from '@/infrastructure/db/schemas'
 import { GuessRepositoryInterface } from './guess.interface'
 
 export class GuessRepository implements GuessRepositoryInterface {
@@ -40,6 +46,46 @@ export class GuessRepository implements GuessRepositoryInterface {
 			)
 			.limit(1)
 			.then((res) => res[0] || null)
+	}
+
+	async findByUserIdWithDetails(
+		userId: string,
+		options: { limit: number; offset: number },
+	) {
+		const rows = await db
+			.select({
+				guessId: guessTable.id,
+				guessCreatedAt: guessTable.createdAt,
+				guessFirstTeamPoints: guessTable.firstTeamPoints,
+				guessSecondTeamPoints: guessTable.secondTeamPoints,
+				pollId: pollTable.id,
+				pollTitle: pollTable.title,
+				gameId: gameTable.id,
+				gameDate: gameTable.date,
+				gameFirstTeamName: gameTable.firstTeamName,
+				gameSecondTeamName: gameTable.secondTeamName,
+				gameFirstTeamCountryCode: gameTable.firstTeamCountryCode,
+				gameSecondTeamCountryCode: gameTable.secondTeamCountryCode,
+				gameFirstTeamGoals: gameTable.firstTeamGoals,
+				gameSecondTeamGoals: gameTable.secondTeamGoals,
+			})
+			.from(guessTable)
+			.innerJoin(participantTable, eq(guessTable.participantId, participantTable.id))
+			.innerJoin(pollTable, eq(participantTable.pollId, pollTable.id))
+			.innerJoin(gameTable, eq(guessTable.gameId, gameTable.id))
+			.where(eq(participantTable.userId, userId))
+			.orderBy(desc(guessTable.createdAt))
+			.limit(options.limit)
+			.offset(options.offset)
+
+		const totalRow = await db
+			.select({ total: sql<number>`count(*)` })
+			.from(guessTable)
+			.innerJoin(participantTable, eq(guessTable.participantId, participantTable.id))
+			.where(eq(participantTable.userId, userId))
+			.then((res) => res[0]?.total ?? 0)
+
+		return { rows, total: Number(totalRow) }
 	}
 
 	async create(data: GuessInsert) {

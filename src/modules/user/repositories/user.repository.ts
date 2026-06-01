@@ -57,4 +57,17 @@ export class UserRepository implements UserRepositoryInterface {
 			.limit(1)
 			.then((res) => res[0])
 	}
+
+	async updateProfile(id: string, data: { name: string; email: string }) {
+		return db
+			.update(userTable)
+			.set(data)
+			.where(eq(userTable.id, id))
+			.returning({
+				id: userTable.id,
+				name: userTable.name,
+				email: userTable.email,
+			})
+			.then((res) => res[0] || null)
+	}
 }
