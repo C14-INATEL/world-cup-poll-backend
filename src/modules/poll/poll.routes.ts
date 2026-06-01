@@ -1,12 +1,15 @@
 import { FastifyInstance } from 'fastify'
-import { authMiddleware } from '@/core/middlewares/auth-middleware'
+import type { AuthMiddleware } from '@/core/middlewares/auth-middleware'
+import type { AppDb } from '@/infrastructure/db'
 import { PollController } from '@/modules/poll/poll.controller'
 import { makePollService } from '@/modules/poll/services/make-poll.service'
 
-const pollService = makePollService()
-const pollController = new PollController(pollService)
+export async function PollRoutes(
+	app: FastifyInstance,
+	{ db, authMiddleware }: { db: AppDb; authMiddleware: AuthMiddleware },
+) {
+	const pollController = new PollController(makePollService(db))
 
-export async function PollRoutes(app: FastifyInstance) {
 	app.addHook('preHandler', authMiddleware)
 
 	app.post('/poll/create', pollController.create.bind(pollController))

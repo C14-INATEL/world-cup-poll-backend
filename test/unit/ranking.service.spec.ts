@@ -106,9 +106,9 @@ describe('RankingService', () => {
 
 			const ranking = await service.getRanking('poll-1', 'user-2')
 
-			expect(rankingRepository.findParticipantsWithGuessesAndResults).toHaveBeenCalledWith(
-				'poll-1',
-			)
+			expect(
+				rankingRepository.findParticipantsWithGuessesAndResults,
+			).toHaveBeenCalledWith('poll-1')
 			expect(ranking).toHaveLength(1)
 			expect(ranking[0]).toMatchObject({
 				position: 1,

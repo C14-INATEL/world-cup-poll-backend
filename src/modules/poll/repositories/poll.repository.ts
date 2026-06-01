@@ -1,5 +1,5 @@
 import { and, eq, exists, isNotNull, or, sql } from 'drizzle-orm'
-import { db } from '@/infrastructure/db'
+import type { AppDb } from '@/infrastructure/db'
 import {
 	PollInsert,
 	participantTable,
@@ -9,8 +9,10 @@ import {
 import { PollRepositoryInterface } from './poll.interface'
 
 export class PollRepository implements PollRepositoryInterface {
+	constructor(private readonly db: AppDb) {}
+
 	async create(data: PollInsert) {
-		return db
+		return this.db
 			.insert(pollTable)
 			.values(data)
 			.returning()
@@ -18,7 +20,7 @@ export class PollRepository implements PollRepositoryInterface {
 	}
 
 	async findById(id: string) {
-		return db
+		return this.db
 			.select()
 			.from(pollTable)
 			.where(eq(pollTable.id, id))
@@ -26,7 +28,7 @@ export class PollRepository implements PollRepositoryInterface {
 	}
 
 	async findByCode(code: string) {
-		return db
+		return this.db
 			.select()
 			.from(pollTable)
 			.where(eq(pollTable.code, code))
@@ -34,7 +36,7 @@ export class PollRepository implements PollRepositoryInterface {
 	}
 
 	async findByCodeAndUserId(code: string, userId: string) {
-		return db
+		return this.db
 			.select({
 				id: pollTable.id,
 				title: pollTable.title,
@@ -52,7 +54,7 @@ export class PollRepository implements PollRepositoryInterface {
 					or(
 						eq(pollTable.ownerId, userId),
 						exists(
-							db
+							this.db
 								.select()
 								.from(participantTable)
 								.where(
@@ -70,7 +72,7 @@ export class PollRepository implements PollRepositoryInterface {
 	}
 
 	async updateTitle(id: string, title: string) {
-		return db
+		return this.db
 			.update(pollTable)
 			.set({ title })
 			.where(eq(pollTable.id, id))
@@ -79,7 +81,7 @@ export class PollRepository implements PollRepositoryInterface {
 	}
 
 	async delete(id: string) {
-		return db
+		return this.db
 			.delete(pollTable)
 			.where(eq(pollTable.id, id))
 			.returning()
@@ -87,7 +89,7 @@ export class PollRepository implements PollRepositoryInterface {
 	}
 
 	async findAllByUserId(userId: string) {
-		return db
+		return this.db
 			.select({
 				id: pollTable.id,
 				title: pollTable.title,

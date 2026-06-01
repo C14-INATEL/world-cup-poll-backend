@@ -1,5 +1,5 @@
 import { and, desc, eq, sql } from 'drizzle-orm'
-import { db } from '@/infrastructure/db'
+import type { AppDb } from '@/infrastructure/db'
 import {
 	gameTable,
 	GuessInsert,
@@ -10,16 +10,18 @@ import {
 import { GuessRepositoryInterface } from './guess.interface'
 
 export class GuessRepository implements GuessRepositoryInterface {
+	constructor(private readonly db: AppDb) {}
+
 	async findAll() {
-		return db.select().from(guessTable)
+		return this.db.select().from(guessTable)
 	}
 
 	findAllByGameId(gameId: string) {
-		return db.select().from(guessTable).where(eq(guessTable.gameId, gameId))
+		return this.db.select().from(guessTable).where(eq(guessTable.gameId, gameId))
 	}
 
 	async findById(id: string) {
-		return db
+		return this.db
 			.select()
 			.from(guessTable)
 			.where(eq(guessTable.id, id))
@@ -28,14 +30,14 @@ export class GuessRepository implements GuessRepositoryInterface {
 	}
 
 	async findByParticipantId(participantId: string) {
-		return db
+		return this.db
 			.select()
 			.from(guessTable)
 			.where(eq(guessTable.participantId, participantId))
 	}
 
 	async findByParticipantAndGame(gameId: string, participantId: string) {
-		return db
+		return this.db
 			.select()
 			.from(guessTable)
 			.where(
@@ -52,7 +54,7 @@ export class GuessRepository implements GuessRepositoryInterface {
 		userId: string,
 		options: { limit: number; offset: number },
 	) {
-		const rows = await db
+		const rows = await this.db
 			.select({
 				guessId: guessTable.id,
 				guessCreatedAt: guessTable.createdAt,
@@ -78,7 +80,7 @@ export class GuessRepository implements GuessRepositoryInterface {
 			.limit(options.limit)
 			.offset(options.offset)
 
-		const totalRow = await db
+		const totalRow = await this.db
 			.select({ total: sql<number>`count(*)` })
 			.from(guessTable)
 			.innerJoin(participantTable, eq(guessTable.participantId, participantTable.id))
@@ -89,7 +91,7 @@ export class GuessRepository implements GuessRepositoryInterface {
 	}
 
 	async create(data: GuessInsert) {
-		const [guess] = await db.insert(guessTable).values(data).returning()
+		const [guess] = await this.db.insert(guessTable).values(data).returning()
 		return guess
 	}
 
@@ -100,7 +102,7 @@ export class GuessRepository implements GuessRepositoryInterface {
 			secondTeamPoints?: number
 		}
 	}) {
-		const [guess] = await db
+		const [guess] = await this.db
 			.update(guessTable)
 			.set(data.guess)
 			.where(eq(guessTable.id, data.id))

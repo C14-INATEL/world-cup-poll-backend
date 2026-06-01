@@ -1,5 +1,5 @@
 import { and, eq } from 'drizzle-orm'
-import { db } from '@/infrastructure/db'
+import type { AppDb } from '@/infrastructure/db'
 import {
 	ParticipantInsert,
 	participantTable,
@@ -9,8 +9,10 @@ import { DbExecutor } from '@/infrastructure/db/unit-of-work'
 import { ParticipantRepositoryInterface } from './participant.interface'
 
 export class ParticipantRepository implements ParticipantRepositoryInterface {
+	constructor(private readonly db: AppDb) {}
+
 	async findById(id: string) {
-		return db
+		return this.db
 			.select()
 			.from(participantTable)
 			.where(eq(participantTable.id, id))
@@ -18,7 +20,7 @@ export class ParticipantRepository implements ParticipantRepositoryInterface {
 	}
 
 	async findByUserId(userId: string) {
-		return db
+		return this.db
 			.select()
 			.from(participantTable)
 			.where(eq(participantTable.userId, userId))
@@ -26,7 +28,7 @@ export class ParticipantRepository implements ParticipantRepositoryInterface {
 	}
 
 	async findByUserIdAndPollId(userId: string, pollId: string) {
-		return db
+		return this.db
 			.select()
 			.from(participantTable)
 			.where(
@@ -39,7 +41,7 @@ export class ParticipantRepository implements ParticipantRepositoryInterface {
 	}
 
 	async findAll(pollId: string) {
-		return db
+		return this.db
 			.select({
 				userId: participantTable.userId,
 				name: userTable.name,
@@ -51,7 +53,7 @@ export class ParticipantRepository implements ParticipantRepositoryInterface {
 	}
 
 	async getParticipantsByPollId(pollId: string) {
-		return db
+		return this.db
 			.select({
 				userId: participantTable.userId,
 				name: userTable.name,
@@ -62,7 +64,7 @@ export class ParticipantRepository implements ParticipantRepositoryInterface {
 			.where(eq(participantTable.pollId, pollId))
 	}
 
-	async add(data: ParticipantInsert, executor: DbExecutor = db) {
+	async add(data: ParticipantInsert, executor: DbExecutor = this.db) {
 		return executor
 			.insert(participantTable)
 			.values(data)

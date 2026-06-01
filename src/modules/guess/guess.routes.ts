@@ -1,11 +1,15 @@
 import { FastifyInstance } from 'fastify'
-import { authMiddleware } from '@/core/middlewares/auth-middleware'
+import type { AuthMiddleware } from '@/core/middlewares/auth-middleware'
+import type { AppDb } from '@/infrastructure/db'
 import { GuessController } from '@/modules/guess/guess.controller'
 import { makeGuessService } from '@/modules/guess/services/make-guess.service'
 
-const guessController = new GuessController(makeGuessService())
+export async function GuessRoutes(
+	app: FastifyInstance,
+	{ db, authMiddleware }: { db: AppDb; authMiddleware: AuthMiddleware },
+) {
+	const guessController = new GuessController(makeGuessService(db))
 
-export async function GuessRoutes(app: FastifyInstance) {
 	app.addHook('preHandler', authMiddleware)
 
 	app.post(

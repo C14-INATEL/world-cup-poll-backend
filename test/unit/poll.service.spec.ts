@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { BadRequestError, NotFoundError, UnauthorizedError } from '@/core/errors/error-handler'
+import {
+	BadRequestError,
+	NotFoundError,
+	UnauthorizedError,
+} from '@/core/errors/error-handler'
 import { PollService } from '@/modules/poll/services/poll.service'
 import { makePoll } from '../factories/poll/make-poll'
 
@@ -25,7 +29,11 @@ describe('PollService', () => {
 			)
 
 			await expect(
-				service.create({ title: 'Novo Bolão', code: 'ABC123DEF4', ownerId: 'user-1' }),
+				service.create({
+					title: 'Novo Bolão',
+					code: 'ABC123DEF4',
+					ownerId: 'user-1',
+				}),
 			).rejects.toThrow(BadRequestError)
 
 			expect(pollRepository.create).not.toHaveBeenCalled()
@@ -41,7 +49,11 @@ describe('PollService', () => {
 			}
 
 			const participantRepository = {
-				add: vi.fn().mockResolvedValue({ id: 'participant-1', pollId: poll.id, userId: poll.ownerId }),
+				add: vi.fn().mockResolvedValue({
+					id: 'participant-1',
+					pollId: poll.id,
+					userId: poll.ownerId,
+				}),
 			}
 
 			const service = new PollService(
@@ -49,7 +61,11 @@ describe('PollService', () => {
 				participantRepository as any,
 			)
 
-			const result = await service.create({ title: 'Novo Bolão', code: 'ABC123DEF4', ownerId: 'user-1' })
+			const result = await service.create({
+				title: 'Novo Bolão',
+				code: 'ABC123DEF4',
+				ownerId: 'user-1',
+			})
 
 			expect(pollRepository.create).toHaveBeenCalledOnce()
 			expect(result).toEqual(poll)
@@ -64,7 +80,11 @@ describe('PollService', () => {
 			}
 
 			const participantRepository = {
-				add: vi.fn().mockResolvedValue({ id: 'participant-1', pollId: poll.id, userId: poll.ownerId }),
+				add: vi.fn().mockResolvedValue({
+					id: 'participant-1',
+					pollId: poll.id,
+					userId: poll.ownerId,
+				}),
 			}
 
 			const service = new PollService(
@@ -72,7 +92,11 @@ describe('PollService', () => {
 				participantRepository as any,
 			)
 
-			await service.create({ title: 'Novo Bolão', code: 'ABC123DEF4', ownerId: 'user-42' })
+			await service.create({
+				title: 'Novo Bolão',
+				code: 'ABC123DEF4',
+				ownerId: 'user-42',
+			})
 
 			expect(participantRepository.add).toHaveBeenCalledOnce()
 			expect(participantRepository.add).toHaveBeenCalledWith({
@@ -98,7 +122,11 @@ describe('PollService', () => {
 				participantRepository as any,
 			)
 
-			const result = await service.create({ title: 'Meu Bolão', code: 'ABC123DEF4', ownerId: 'user-1' })
+			const result = await service.create({
+				title: 'Meu Bolão',
+				code: 'ABC123DEF4',
+				ownerId: 'user-1',
+			})
 
 			expect(result.title).toBe('Meu Bolão')
 			expect(result).toEqual(poll)
@@ -241,9 +269,16 @@ describe('PollService', () => {
 
 			const service = new PollService(pollRepository as any, {} as any)
 
-			const result = await service.updateTitle('poll-1', 'Título Atualizado', 'user-1')
+			const result = await service.updateTitle(
+				'poll-1',
+				'Título Atualizado',
+				'user-1',
+			)
 
-			expect(pollRepository.updateTitle).toHaveBeenCalledWith('poll-1', 'Título Atualizado')
+			expect(pollRepository.updateTitle).toHaveBeenCalledWith(
+				'poll-1',
+				'Título Atualizado',
+			)
 			expect(result.title).toBe('Título Atualizado')
 		})
 
@@ -272,9 +307,9 @@ describe('PollService', () => {
 
 			const service = new PollService(pollRepository as any, {} as any)
 
-			await expect(
-				service.delete('poll-inexistente', 'user-1'),
-			).rejects.toThrow(NotFoundError)
+			await expect(service.delete('poll-inexistente', 'user-1')).rejects.toThrow(
+				NotFoundError,
+			)
 
 			expect(pollRepository.delete).not.toHaveBeenCalled()
 		})
@@ -289,9 +324,9 @@ describe('PollService', () => {
 
 			const service = new PollService(pollRepository as any, {} as any)
 
-			await expect(
-				service.delete(poll.id, 'user-outro'),
-			).rejects.toThrow(UnauthorizedError)
+			await expect(service.delete(poll.id, 'user-outro')).rejects.toThrow(
+				UnauthorizedError,
+			)
 
 			expect(pollRepository.delete).not.toHaveBeenCalled()
 		})
@@ -336,9 +371,9 @@ describe('PollService', () => {
 
 			const service = new PollService(pollRepository as any, {} as any)
 
-			await expect(
-				service.delete(poll.id, 'user-participante'),
-			).rejects.toThrow(UnauthorizedError)
+			await expect(service.delete(poll.id, 'user-participante')).rejects.toThrow(
+				UnauthorizedError,
+			)
 
 			expect(pollRepository.delete).not.toHaveBeenCalled()
 		})

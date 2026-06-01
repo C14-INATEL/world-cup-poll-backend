@@ -1,5 +1,6 @@
 import { env } from '@/config/env'
 import logger from '@/config/logger'
+import type { AppDb } from '@/infrastructure/db'
 import { makeGameService } from '@/modules/game/services/make-game.service'
 import { GameInsert } from '../db/schemas'
 
@@ -38,7 +39,7 @@ type MatchesApiResponse = {
 	}
 }
 
-export async function getAllMatchesFromApiJob() {
+export async function getAllMatchesFromApiJob(db: AppDb) {
 	logger.info('[CRON] Getting all matches from API...')
 
 	const res = await fetch(
@@ -62,7 +63,7 @@ export async function getAllMatchesFromApiJob() {
 
 	const data: { matches: MatchesApiResponse[] } = await res.json()
 
-	const gameService = makeGameService()
+	const gameService = makeGameService(db)
 
 	const existingGames = await gameService.getAllGames()
 

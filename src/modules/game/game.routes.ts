@@ -1,12 +1,15 @@
 import { FastifyInstance } from 'fastify'
-import { authMiddleware } from '@/core/middlewares/auth-middleware'
+import type { AuthMiddleware } from '@/core/middlewares/auth-middleware'
+import type { AppDb } from '@/infrastructure/db'
 import { GameController } from '@/modules/game/game.controller'
 import { makeGameService } from '@/modules/game/services/make-game.service'
 
-const gameService = makeGameService()
-const gameController = new GameController(gameService)
+export async function GamesRoutes(
+	app: FastifyInstance,
+	{ db, authMiddleware }: { db: AppDb; authMiddleware: AuthMiddleware },
+) {
+	const gameController = new GameController(makeGameService(db))
 
-export async function GamesRoutes(app: FastifyInstance) {
 	app.addHook('preHandler', authMiddleware)
 
 	app.get('/games', gameController.findAllGames.bind(gameController))

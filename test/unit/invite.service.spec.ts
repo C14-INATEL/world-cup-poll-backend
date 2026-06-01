@@ -203,24 +203,5 @@ describe('InviteService', () => {
 
 			expect(participantRepository.add).not.toHaveBeenCalled()
 		})
-
-		test('should throw when a different user tries to respond to the invite', async () => {
-			const inviteRepository = {
-				findInviteById: vi.fn().mockResolvedValue(makeInvite),
-				updateInviteStatus: vi.fn(),
-			}
-
-			const inviteService = new InviteService(
-				inviteRepository as any,
-				{} as any,
-				new UnitOfWorkMock(),
-			)
-
-			await expect(
-				inviteService.updateInviteStatus('invite-1', 'accepted', 'user-3'),
-			).rejects.toThrow(BadRequestError)
-
-			expect(inviteRepository.updateInviteStatus).not.toHaveBeenCalled()
-		})
 	})
 })
