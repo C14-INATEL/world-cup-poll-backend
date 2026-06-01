@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from 'drizzle-orm'
+import { and, desc, eq, ne, sql } from 'drizzle-orm'
 import type { AppDb } from '@/infrastructure/db'
 import {
 	gameTable,
@@ -6,6 +6,7 @@ import {
 	guessTable,
 	participantTable,
 	pollTable,
+	userTable,
 } from '@/infrastructure/db/schemas'
 import { GuessRepositoryInterface } from './guess.interface'
 
@@ -48,6 +49,40 @@ export class GuessRepository implements GuessRepositoryInterface {
 			)
 			.limit(1)
 			.then((res) => res[0] || null)
+	}
+
+	async findByPollIdWithDetails(pollId: string, excludedUserId: string) {
+		return this.db
+			.select({
+				guessId: guessTable.id,
+				guessCreatedAt: guessTable.createdAt,
+				guessFirstTeamPoints: guessTable.firstTeamPoints,
+				guessSecondTeamPoints: guessTable.secondTeamPoints,
+				participantId: participantTable.id,
+				participantName: userTable.name,
+				pollId: pollTable.id,
+				pollTitle: pollTable.title,
+				gameId: gameTable.id,
+				gameDate: gameTable.date,
+				gameFirstTeamName: gameTable.firstTeamName,
+				gameSecondTeamName: gameTable.secondTeamName,
+				gameFirstTeamCountryCode: gameTable.firstTeamCountryCode,
+				gameSecondTeamCountryCode: gameTable.secondTeamCountryCode,
+				gameFirstTeamGoals: gameTable.firstTeamGoals,
+				gameSecondTeamGoals: gameTable.secondTeamGoals,
+			})
+			.from(guessTable)
+			.innerJoin(participantTable, eq(guessTable.participantId, participantTable.id))
+			.innerJoin(userTable, eq(participantTable.userId, userTable.id))
+			.innerJoin(pollTable, eq(participantTable.pollId, pollTable.id))
+			.innerJoin(gameTable, eq(guessTable.gameId, gameTable.id))
+			.where(
+				and(
+					eq(participantTable.pollId, pollId),
+					ne(participantTable.userId, excludedUserId),
+				),
+			)
+			.orderBy(desc(guessTable.createdAt))
 	}
 
 	async findByUserIdWithDetails(

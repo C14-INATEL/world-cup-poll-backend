@@ -119,4 +119,19 @@ export class GuessController {
 
 		reply.status(200).send(guesses)
 	}
+
+	async findByPollId(request: FastifyRequest, reply: FastifyReply) {
+		const paramsSchema = z.object({
+			pollId: z.string('ID do bolao e obrigatorio'),
+		})
+
+		const { pollId } = paramsSchema.parse(request.params)
+
+		const guesses = await this.guessService.findByPollId(
+			pollId,
+			request.userId,
+		)
+
+		reply.status(200).send(guesses)
+	}
 }

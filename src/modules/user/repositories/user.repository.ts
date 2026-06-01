@@ -61,7 +61,7 @@ export class UserRepository implements UserRepositoryInterface {
 	}
 
 	async updateProfile(id: string, data: { name: string; email: string }) {
-		return db
+		return this.db
 			.update(userTable)
 			.set(data)
 			.where(eq(userTable.id, id))

@@ -17,12 +17,18 @@ export type UserGuessRow = {
 	gameSecondTeamGoals: number | null
 }
 
+export type PollGuessRow = UserGuessRow & {
+	participantId: string
+	participantName: string
+}
+
 export interface GuessRepositoryInterface {
 	findAll(): Promise<Guess[]>
 	findAllByGameId(gameId: string): Promise<Guess[]>
 	findById(id: string): Promise<Guess | null>
 	findByParticipantId(participantId: string): Promise<Guess[]>
 	findByParticipantAndGame(gameId: string, participantId: string): Promise<Guess>
+	findByPollIdWithDetails(pollId: string, excludedUserId: string): Promise<PollGuessRow[]>
 	findByUserIdWithDetails(
 		userId: string,
 		options: { limit: number; offset: number },
