@@ -103,4 +103,35 @@ export class GuessController {
 
 		reply.status(200).send(guesses)
 	}
+
+	async findByUser(request: FastifyRequest, reply: FastifyReply) {
+		const querySchema = z.object({
+			page: z.coerce.number().int().min(1).default(1),
+			limit: z.coerce.number().int().min(1).max(50).default(10),
+		})
+
+		const { page, limit } = querySchema.parse(request.query)
+
+		const guesses = await this.guessService.findByUserId(request.userId, {
+			page,
+			limit,
+		})
+
+		reply.status(200).send(guesses)
+	}
+
+	async findByPollId(request: FastifyRequest, reply: FastifyReply) {
+		const paramsSchema = z.object({
+			pollId: z.string('ID do bolao e obrigatorio'),
+		})
+
+		const { pollId } = paramsSchema.parse(request.params)
+
+		const guesses = await this.guessService.findByPollId(
+			pollId,
+			request.userId,
+		)
+
+		reply.status(200).send(guesses)
+	}
 }

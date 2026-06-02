@@ -4,6 +4,7 @@ import {
 	NotFoundError,
 	UnauthorizedError,
 } from '@/core/errors/error-handler'
+import { calculateScore } from '@/core/utils/score'
 import { GuessInsert } from '@/infrastructure/db/schemas'
 import { GameRepository } from '@/modules/game/repositories/game.repository'
 import { GuessRepository } from '@/modules/guess/repositories/guess.repository'
@@ -106,5 +107,115 @@ export class GuessService {
 
 	async findByGameId(gameId: string) {
 		return this.guessRepository.findAllByGameId(gameId)
+	}
+
+	async findByPollId(pollId: string, userId: string) {
+		const participant = await this.participantRepository.findByUserIdAndPollId(
+			userId,
+			pollId,
+		)
+
+		if (!participant) {
+			throw new UnauthorizedError('Usuario nao participa deste bolao')
+		}
+
+		const rows = await this.guessRepository.findByPollIdWithDetails(
+			pollId,
+			userId,
+		)
+
+		return rows.map((row) => this.toGuessWithDetails(row))
+	}
+
+	async findByUserId(
+		userId: string,
+		options: { page: number; limit: number },
+	) {
+		const offset = (options.page - 1) * options.limit
+		const { rows, total } = await this.guessRepository.findByUserIdWithDetails(
+			userId,
+			{ limit: options.limit, offset },
+		)
+
+		const items = rows.map((row) => this.toGuessWithDetails(row))
+
+		return {
+			items,
+			page: options.page,
+			limit: options.limit,
+			total,
+			hasMore: offset + items.length < total,
+		}
+	}
+
+	private toGuessWithDetails(row: {
+		guessId: string
+		guessCreatedAt: Date
+		guessFirstTeamPoints: number
+		guessSecondTeamPoints: number
+		pollId: string
+		pollTitle: string
+		gameId: string
+		gameDate: string
+		gameFirstTeamName: string | null
+		gameSecondTeamName: string | null
+		gameFirstTeamCountryCode: string
+		gameSecondTeamCountryCode: string
+		gameFirstTeamGoals: number | null
+		gameSecondTeamGoals: number | null
+		participantId?: string
+		participantName?: string
+	}) {
+		const hasResult =
+			row.gameFirstTeamGoals !== null && row.gameSecondTeamGoals !== null
+		const points = hasResult
+			? calculateScore({
+				guessFirst: row.guessFirstTeamPoints,
+				guessSecond: row.guessSecondTeamPoints,
+				actualFirst: row.gameFirstTeamGoals!,
+				actualSecond: row.gameSecondTeamGoals!,
+			})
+			: null
+
+		let status: 'Pendente' | 'Acertou' | 'Errou' | 'Parcial'
+		if (!hasResult) {
+			status = 'Pendente'
+		} else if (points === 5) {
+			status = 'Acertou'
+		} else if (points === 0) {
+			status = 'Errou'
+		} else {
+			status = 'Parcial'
+		}
+
+		return {
+			id: row.guessId,
+			createdAt: row.guessCreatedAt.toISOString(),
+			firstTeamPoints: row.guessFirstTeamPoints,
+			secondTeamPoints: row.guessSecondTeamPoints,
+			participant:
+				row.participantId && row.participantName
+					? {
+						id: row.participantId,
+						name: row.participantName,
+					}
+					: undefined,
+			poll: {
+				id: row.pollId,
+				title: row.pollTitle,
+			},
+			game: {
+				id: row.gameId,
+				date: row.gameDate,
+				firstTeamName: row.gameFirstTeamName,
+				secondTeamName: row.gameSecondTeamName,
+				firstTeamCountryCode: row.gameFirstTeamCountryCode,
+				secondTeamCountryCode: row.gameSecondTeamCountryCode,
+			},
+			result: {
+				status,
+				points,
+			},
+		}
 	}
 }
