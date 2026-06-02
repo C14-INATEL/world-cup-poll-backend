@@ -1,7 +1,6 @@
 import { createRealPollFactory } from '@test/factories/poll/create-real-poll'
 import { makePoll } from '@test/factories/poll/make-poll'
 import { createRealUserFactory } from '@test/factories/user/create-real-user'
-import { Pool } from 'pg'
 import {
 	afterAll,
 	afterEach,
@@ -12,7 +11,7 @@ import {
 	it,
 } from 'vitest'
 import { BadRequestError } from '@/core/errors/error-handler'
-import { AppDb, createDb } from '@/infrastructure/db'
+import { AppDb } from '@/infrastructure/db'
 import { UserType } from '@/infrastructure/db/schemas'
 import { makePollService } from '@/modules/poll/services/make-poll.service'
 import { PollService } from '@/modules/poll/services/poll.service'
@@ -21,31 +20,25 @@ import { truncateTables } from '../helpers/truncate-tables'
 
 describe('integration - poll services', () => {
 	let testDb: AppDb
-	let testPoll: Pool
 
 	let pollService: PollService
 	let user: UserType
 
 	beforeAll(async () => {
-		const { db, pool } = await setupTestDatabase()
-
-		testDb = db
-		testPoll = pool
-	})
-
-	afterAll(async () => {
-		await testPoll.end()
-		await teardownTestDatabase()
-	})
+		testDb = await setupTestDatabase()
+	}, 120_000)
 
 	beforeEach(async () => {
 		user = await createRealUserFactory(testDb)
-
 		pollService = makePollService(testDb)
 	})
 
 	afterEach(async () => {
 		await truncateTables(testDb)
+	})
+
+	afterAll(async () => {
+		await teardownTestDatabase()
 	})
 
 	it('should create a poll successfully', async () => {

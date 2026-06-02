@@ -2,10 +2,13 @@ import {
 	PostgreSqlContainer,
 	StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql'
-import { createDb } from '@/infrastructure/db'
+import { Pool } from 'pg'
+import { AppDb, createDb } from '@/infrastructure/db'
 import { runMigrations } from '@/infrastructure/db/migrate'
 
 export let postgresContainer: StartedPostgreSqlContainer
+let testDb: AppDb
+let testPoll: Pool
 
 export async function setupTestDatabase() {
 	postgresContainer = await new PostgreSqlContainer('postgres:16.9-alpine3.22')
@@ -26,9 +29,13 @@ export async function setupTestDatabase() {
 
 	await runMigrations(db)
 
-	return { db, pool }
+	testDb = db
+	testPoll = pool
+
+	return testDb
 }
 
 export async function teardownTestDatabase() {
+	await testPoll.end()
 	await postgresContainer.stop()
 }

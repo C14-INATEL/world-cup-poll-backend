@@ -47,8 +47,10 @@ export class PollService {
 			throw new NotFoundError('Bolão não encontrado')
 		}
 
-		const participant =
-			await this.participantRepository.findByUserIdAndPollId(userId, poll.id)
+		const participant = await this.participantRepository.findByUserIdAndPollId(
+			userId,
+			poll.id,
+		)
 
 		if (participant) {
 			throw new BadRequestError('Você já participa deste grupo')
