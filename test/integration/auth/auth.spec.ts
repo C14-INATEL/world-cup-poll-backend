@@ -1,5 +1,4 @@
 import { createRealUserFactory } from '@test/factories/user/create-real-user'
-import { Pool } from 'pg'
 import {
 	afterAll,
 	afterEach,
@@ -10,8 +9,7 @@ import {
 	it,
 } from 'vitest'
 import { isUniqueConstraintError } from '@/core/errors/unique-constraint-error'
-import { AppDb, createDb } from '@/infrastructure/db'
-import { runMigrations } from '@/infrastructure/db/migrate'
+import { AppDb } from '@/infrastructure/db'
 import { AuthService } from '@/modules/auth/services/auth.service'
 import { makeAuthService } from '@/modules/auth/services/make-auth.service'
 import { makeSessionService } from '@/modules/session/services/make-session.service'
@@ -21,26 +19,13 @@ import { truncateTables } from '../helpers/truncate-tables'
 
 describe('integration - auth services', () => {
 	let testDb: AppDb
-	let testPoll: Pool
 
 	let authService: AuthService
 	let sessionService: SessionService
 
 	beforeAll(async () => {
-		const databaseUrl = await setupTestDatabase()
-
-		const { db, pool } = createDb(databaseUrl)
-
-		testDb = db
-		testPoll = pool
-
-		await runMigrations(testDb)
-	})
-
-	afterAll(async () => {
-		await testPoll.end()
-		await teardownTestDatabase()
-	})
+		testDb = await setupTestDatabase()
+	}, 120_000)
 
 	beforeEach(async () => {
 		authService = makeAuthService(testDb)
@@ -49,6 +34,10 @@ describe('integration - auth services', () => {
 
 	afterEach(async () => {
 		await truncateTables(testDb)
+	})
+
+	afterAll(async () => {
+		await teardownTestDatabase()
 	})
 
 	it('should login successfully', async () => {

@@ -1,9 +1,11 @@
-export function makePoll(overrides = {}) {
+import { Poll } from '@/infrastructure/db/schemas'
+
+export function makePoll(overrides: Partial<Poll> = {}): Poll {
 	return {
-		id: 'poll-1',
+		id: crypto.randomUUID(),
 		title: 'Bolão Teste',
 		code: 'ABC123DEF4',
-		ownerId: 'user-1',
+		ownerId: crypto.randomUUID(),
 		createdAt: new Date(),
 		...overrides,
 	}
