@@ -127,10 +127,7 @@ export class GuessController {
 
 		const { pollId } = paramsSchema.parse(request.params)
 
-		const guesses = await this.guessService.findByPollId(
-			pollId,
-			request.userId,
-		)
+		const guesses = await this.guessService.findByPollId(pollId, request.userId)
 
 		reply.status(200).send(guesses)
 	}

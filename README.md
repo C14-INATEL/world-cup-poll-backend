@@ -102,30 +102,6 @@ Serviços definidos:
 | `npm run format:check`                        | Verifica formatação/lint sem alterar arquivos |
 | `npm run generate-migration -- --name=<nome>` | Gera migration SQL com nome customizado       |
 
-## Rotas principais
-
-### Públicas
-
-- `GET /` health check básico (`Hello World`)
-- `POST /auth/register`
-- `POST /auth/login`
-- `POST /auth/logout`
-
-### Protegidas (JWT)
-
-- `GET /me`
-- `POST /poll/create`
-- `GET /poll/:code`
-- `GET /polls/user`
-- `POST /poll/invite`
-- `GET /me/invites`
-- `PATCH /invite/:id`
-- `GET /games`
-- `POST /polls/:pollId/guess/create`
-- `PUT /polls/:pollId/guess/:guessId/update`
-- `GET /guess/participant/:participantId`
-- `GET /guess/game/:gameId`
-- `GET /polls/:pollId/ranking`
 
 ## Arquitetura
 

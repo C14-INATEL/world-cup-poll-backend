@@ -1,17 +1,21 @@
+volumes:
+  db_data:
+
 services:
   app:
-    image: joaolucenalima/world-cup-poll-backend:latest
+    build:
+      context: .
     container_name: world-cup-poll-backend
     restart: always
     environment:
-      NODE_ENV: production
-      PORT: ${PORT}
-      FRONTEND_URL: ${FRONTEND_URL}
-      FOOTBALL_API_KEY: ${FOOTBALL_API_KEY:?FOOTBALL_API_KEY is required}
-      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-example}@db:5432/${POSTGRES_DB:-database}
-      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      PORT: ${PORT:-3333}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      FOOTBALL_API_KEY: ${FOOTBALL_API_KEY:-change-me}
+      JWT_SECRET: ${JWT_SECRET:-change-me}
+      DATABASE_URL: ${DATABASE_URL:-postgres://postgres:example@db:5432/database}
+    restart: always
     ports:
-      - "${PORT}:${PORT}"
+      - "${PORT:-3333}:${PORT:-3333}"
     depends_on:
       db:
         condition: service_healthy
@@ -32,7 +36,7 @@ services:
       interval: 60s
       timeout: 5s
       retries: 5
-    mem_limit: 400m
+    mem_limit: 300m
 
   nginx:
     image: nginx:alpine
@@ -48,6 +52,3 @@ services:
       app:
         condition: service_started
     mem_limit: 100m
-
-volumes:
-  db_data:

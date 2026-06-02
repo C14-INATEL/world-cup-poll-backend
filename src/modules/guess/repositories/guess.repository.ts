@@ -1,8 +1,8 @@
 import { and, desc, eq, ne, sql } from 'drizzle-orm'
 import type { AppDb } from '@/infrastructure/db'
 import {
-	gameTable,
 	GuessInsert,
+	gameTable,
 	guessTable,
 	participantTable,
 	pollTable,

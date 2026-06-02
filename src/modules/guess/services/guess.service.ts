@@ -119,18 +119,12 @@ export class GuessService {
 			throw new UnauthorizedError('Usuario nao participa deste bolao')
 		}
 
-		const rows = await this.guessRepository.findByPollIdWithDetails(
-			pollId,
-			userId,
-		)
+		const rows = await this.guessRepository.findByPollIdWithDetails(pollId, userId)
 
 		return rows.map((row) => this.toGuessWithDetails(row))
 	}
 
-	async findByUserId(
-		userId: string,
-		options: { page: number; limit: number },
-	) {
+	async findByUserId(userId: string, options: { page: number; limit: number }) {
 		const offset = (options.page - 1) * options.limit
 		const { rows, total } = await this.guessRepository.findByUserIdWithDetails(
 			userId,
@@ -170,11 +164,11 @@ export class GuessService {
 			row.gameFirstTeamGoals !== null && row.gameSecondTeamGoals !== null
 		const points = hasResult
 			? calculateScore({
-				guessFirst: row.guessFirstTeamPoints,
-				guessSecond: row.guessSecondTeamPoints,
-				actualFirst: row.gameFirstTeamGoals!,
-				actualSecond: row.gameSecondTeamGoals!,
-			})
+					guessFirst: row.guessFirstTeamPoints,
+					guessSecond: row.guessSecondTeamPoints,
+					actualFirst: row.gameFirstTeamGoals!,
+					actualSecond: row.gameSecondTeamGoals!,
+				})
 			: null
 
 		let status: 'Pendente' | 'Acertou' | 'Errou' | 'Parcial'
@@ -196,9 +190,9 @@ export class GuessService {
 			participant:
 				row.participantId && row.participantName
 					? {
-						id: row.participantId,
-						name: row.participantName,
-					}
+							id: row.participantId,
+							name: row.participantName,
+						}
 					: undefined,
 			poll: {
 				id: row.pollId,
