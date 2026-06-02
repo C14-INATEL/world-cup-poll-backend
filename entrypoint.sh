@@ -2,12 +2,12 @@
 set -e
 
 echo "Running database migrations..."
-node dist/src/scripts/migrate.js
+npm run migrate:prod
 echo "Migration OK"
 
 echo "Running seed..."
-node dist/src/scripts/seed-games.js
+npm run seed:games
 echo "Seed OK"
 
 echo "Starting application..."
-exec node dist/src/server.js
+exec npm start

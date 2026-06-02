@@ -9,7 +9,7 @@
     "format": "biome check . --fix",
     "format:check": "biome check .",
     "generate-migration": "drizzle-kit generate --name",
-    "migrate:prod": "node ./dist/src/infrastructure/db/migrate.js",
+    "migrate:prod": "node ./dist/src/scripts/migrate.js",
     "seed:games": "tsx src/scripts/seed-games.ts",
     "test": "vitest run",
     "coverage": "vitest run --coverage"
