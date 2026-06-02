@@ -17,8 +17,15 @@ describe('InviteService', () => {
 	describe('create', () => {
 		test('should not allow duplicate invites', async () => {
 			const repo = new InMemoryInviteRepository()
+			const participantRepository = {
+				findByUserIdAndPollId: vi.fn().mockResolvedValue(null),
+			}
 
-			const service = new InviteService(repo as any, {} as any, {} as any)
+			const service = new InviteService(
+				repo as any,
+				participantRepository as any,
+				{} as any,
+			)
 
 			await service.create({
 				invitedUserId: 'user-1',
@@ -48,10 +55,13 @@ describe('InviteService', () => {
 					...data,
 				})),
 			}
+			const participantRepository = {
+				findByUserIdAndPollId: vi.fn().mockResolvedValue(null),
+			}
 
 			const inviteService = new InviteService(
 				inviteRepository as any,
-				{} as any,
+				participantRepository as any,
 				{} as any,
 			)
 
