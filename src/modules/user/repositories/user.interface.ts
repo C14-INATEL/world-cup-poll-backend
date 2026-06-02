@@ -16,6 +16,7 @@ export interface UserRepositoryInterface {
 		password: string
 	}): Promise<UserPublicData | null>
 	findById(id: string): Promise<UserPublicData | null>
+	search(query: string, currentUserId: string): Promise<UserPublicData[]>
 	updateProfile(
 		id: string,
 		data: Pick<UserPublicData, 'name' | 'email'>,

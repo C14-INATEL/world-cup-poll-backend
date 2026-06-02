@@ -1,8 +1,8 @@
 import { and, desc, eq, ne, sql } from 'drizzle-orm'
 import type { AppDb } from '@/infrastructure/db'
 import {
-	gameTable,
 	GuessInsert,
+	gameTable,
 	guessTable,
 	participantTable,
 	pollTable,
@@ -95,6 +95,8 @@ export class GuessRepository implements GuessRepositoryInterface {
 				guessCreatedAt: guessTable.createdAt,
 				guessFirstTeamPoints: guessTable.firstTeamPoints,
 				guessSecondTeamPoints: guessTable.secondTeamPoints,
+				participantId: participantTable.id,
+				participantName: userTable.name,
 				pollId: pollTable.id,
 				pollTitle: pollTable.title,
 				gameId: gameTable.id,
@@ -108,6 +110,7 @@ export class GuessRepository implements GuessRepositoryInterface {
 			})
 			.from(guessTable)
 			.innerJoin(participantTable, eq(guessTable.participantId, participantTable.id))
+			.innerJoin(userTable, eq(participantTable.userId, userTable.id))
 			.innerJoin(pollTable, eq(participantTable.pollId, pollTable.id))
 			.innerJoin(gameTable, eq(guessTable.gameId, gameTable.id))
 			.where(eq(participantTable.userId, userId))
