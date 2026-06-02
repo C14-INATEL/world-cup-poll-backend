@@ -1,23 +1,18 @@
 volumes:
   db_data:
 
-networks:
-  app_network:
-    external: true
-
 services:
-  app:
+  backend:
     build:
       context: .
     container_name: world-cup-poll-backend
     restart: always
     environment:
       PORT: ${PORT:-3333}
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      FRONTEND_URL: ${FRONTEND_URL}
       FOOTBALL_API_KEY: ${FOOTBALL_API_KEY:-change-me}
       JWT_SECRET: ${JWT_SECRET:-change-me}
-      DATABASE_URL: ${DATABASE_URL:-postgres://postgres:example@db:5432/database}
-    restart: always
+      DATABASE_URL: ${DATABASE_URL:-postgres://postgres:example@database:5432/database}
     ports:
       - "${PORT:-3333}:${PORT:-3333}"
     healthcheck:
@@ -33,9 +28,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    mem_limit: 300m
-    networks:
-      - app_network
 
   db:
     image: postgres:16.9-alpine3.22
@@ -52,6 +44,3 @@ services:
       interval: 60s
       timeout: 5s
       retries: 5
-    mem_limit: 300m
-    networks:
-      - app_network
