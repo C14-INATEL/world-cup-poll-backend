@@ -16,6 +16,6 @@
 		}
 	},
 	"files": {
-		"includes": ["**/*.{ts,js}"]
+		"includes": ["./*.{ts,js}", "{src,test}/**/*.{ts,js}"]
 	}
 }

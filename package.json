@@ -12,7 +12,8 @@
     "migrate:prod": "node ./dist/src/scripts/migrate.js",
     "seed:games": "tsx src/scripts/seed-games.ts",
     "test": "vitest run",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "prepare": "husky"
   },
   "author": "joaolucenalima",
   "license": "ISC",
@@ -38,6 +39,7 @@
     "@types/pg": "8.18.0",
     "@vitest/coverage-v8": "4.1.2",
     "drizzle-kit": "0.31.10",
+    "husky": "9.1.7",
     "testcontainers": "12.0.0",
     "tsc-alias": "1.8.16",
     "tsx": "4.19.0",
