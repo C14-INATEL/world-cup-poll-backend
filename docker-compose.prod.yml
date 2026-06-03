@@ -37,7 +37,7 @@ services:
       - world-cup-poll-network
 
   backend:
-    image: joaolucenalima/world-cup-poll-backend:latest
+    image: world-cup-poll-backend:latest
     container_name: world-cup-poll-backend
     restart: unless-stopped
     environment:
