@@ -1,190 +1,105 @@
-# World Cup Poll Backend
+﻿# World Cup Poll Backend
 
-Backend de um sistema de bolão da Copa do Mundo, construído com Fastify, Drizzle ORM e PostgreSQL.
+Backend de um sistema de bolão da Copa do Mundo, construído com Node.js, TypeScript, Fastify, Drizzle ORM e PostgreSQL.
 
-## Tecnologias
+## Instalação
 
-- Node.js
-- TypeScript
-- Fastify
-- Drizzle ORM + Drizzle Kit
-- PostgreSQL
-- Vitest
-
-## Requisitos
-
-- Node.js 22+
-- npm
-- Docker e Docker Compose (para subir o banco local)
-
-## Configuração de ambiente
-
-1. Copie o arquivo de exemplo:
-
-```bash
-cp .env.example .env
-```
-
-2. Preencha as variáveis do `.env`:
-
-```env
-# App
-PORT=3333
-FRONTEND_URL=http://localhost:5173
-FOOTBALL_API_KEY=your_football_api_key
-JWT_SECRET=your_jwt_secret
-
-# Database
-POSTGRES_HOST=localhost
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=example
-POSTGRES_DB=database
-POSTGRES_PORT=5432
-
-# URL usada pela aplicação e pelo Drizzle
-DATABASE_URL=postgres://postgres:example@localhost:5432/database
-```
-
-## Como rodar localmente (desenvolvimento)
-
-1. Instale as dependências:
+Instale as dependências do projeto:
 
 ```bash
 npm install
 ```
 
-2. Suba o banco de dados:
+Copie o arquivo de variáveis de ambiente:
+
+```bash
+cp .env.example .env
+```
+
+Preencha o `.env` com os dados da aplicação, do banco PostgreSQL e a chave da API de futebol.
+
+Suba o banco local com Docker:
 
 ```bash
 docker compose up -d db
 ```
 
-3. Execute as migrations:
+Execute as migrations do banco:
 
 ```bash
 npx drizzle-kit migrate
 ```
 
-4. Inicie a aplicação em modo desenvolvimento:
+## Execução
+
+Para rodar a API em desenvolvimento:
 
 ```bash
 npm run dev
 ```
 
-A API fica disponível em `http://localhost:3333` (ou na porta configurada em `PORT`).
+A API ficará disponível em `http://localhost:3333`, ou na porta configurada em `PORT`.
 
-## Como rodar com Docker Compose (stack completa)
-
-Com as variáveis de ambiente preenchidas no `.env`, rode:
+Para executar a stack completa com Docker Compose:
 
 ```bash
 docker compose up -d
 ```
 
-Serviços definidos:
+Esse comando sobe os serviços definidos no `docker-compose.yml`, incluindo aplicação, banco de dados e proxy.
 
-- `app`: aplicação Node.js
-- `db`: PostgreSQL
-- `nginx`: proxy reverso
-
-## Scripts
-
-| Script                                        | Descrição                                     |
-| --------------------------------------------- | --------------------------------------------- |
-| `npm run dev`                                 | Sobe a API em modo desenvolvimento com watch  |
-| `npm run build`                               | Gera build de produção em `dist`              |
-| `npm run start`                               | Executa a API a partir do build               |
-| `npm run migrate:prod`                        | Executa migrações usando build de produção    |
-| `npm run seed:games`                          | Busca/atualiza jogos via script               |
-| `npm run test`                                | Executa testes com Vitest                     |
-| `npm run coverage`                            | Executa testes com cobertura                  |
-| `npm run format`                              | Aplica formatação e lint com Biome            |
-| `npm run format:check`                        | Verifica formatação/lint sem alterar arquivos |
-| `npm run generate-migration -- --name=<nome>` | Gera migration SQL com nome customizado       |
-
-
-## Arquitetura
-
-O projeto segue padrão feature-first com camadas por módulo:
-
-**Routes -> Controllers -> Services -> Repositories -> Banco de dados**
-
-Pastas principais:
-
-- `src/core`: middlewares, erros e utilitários compartilhados
-- `src/infrastructure`: integrações técnicas (db, jobs, unit of work)
-- `src/modules`: módulos de domínio (auth, poll, game, guess, invite, ranking, etc.)
-
-Bootstrap da aplicação:
-
-- `src/app.ts`: plugins, middlewares, rotas e agendamento de job
-- `src/server.ts`: inicialização do servidor HTTP
-- `src/config/env.ts`: validação das variáveis de ambiente com Zod
-
-## Migrations
-
-Gerar migration a partir dos schemas:
+Para gerar o build de produção:
 
 ```bash
-npx drizzle-kit generate
+npm run build
 ```
 
-Gerar migration com nome:
+Para iniciar a aplicação a partir do build:
 
 ```bash
-npm run generate-migration -- --name=nome-da-migration
+npm run start
 ```
 
-Aplicar migrações pendentes:
+## Uso
+
+Verifique se a API está ativa:
 
 ```bash
-npx drizzle-kit migrate
+curl http://localhost:3333/health
 ```
 
-## Testes
-
-Executar testes unitários:
+Crie um usuário:
 
 ```bash
-npm run test
+curl -X POST http://localhost:3333/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"João","email":"joao@example.com","password":"123456"}'
 ```
 
-Executar cobertura:
+Faça login:
 
 ```bash
-npm run coverage
+curl -X POST http://localhost:3333/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"joao@example.com","password":"123456"}'
 ```
 
-## Notificação de pipeline
+Após o login, use o token retornado no cabeçalho das requisições protegidas:
 
-O workflow de CI/CD envia notificação por e-mail ao final da execução em duas etapas:
+```bash
+curl http://localhost:3333/me \
+  -H "Authorization: Bearer SEU_TOKEN"
+```
 
-- `generate-email-content`: gera o assunto e o corpo HTML em `.github/scripts/generate-pipeline-email-content.mjs`
-- `notification`: envia o e-mail com `dawidd6/action-send-mail@v6`
+As demais operações da API seguem o mesmo padrão: envie os dados em JSON quando necessário e informe o token de autenticação nas rotas protegidas.
 
-Arquivos gerados para envio:
+## Funcionalidades
 
-- `.artifacts/email/subject.txt`
-- `.artifacts/email/pipeline-notification.html`
-
-Para habilitar, configure no GitHub Actions os secrets abaixo:
-
-- `MAIL_SERVER_ADDRESS`: servidor SMTP (ex.: `smtp.gmail.com`)
-- `MAIL_SERVER_PORT`: porta SMTP (ex.: `465`)
-- `MAIL_USERNAME`: usuário/e-mail da conta SMTP
-- `MAIL_PASSWORD`: senha da conta SMTP (ou senha de app)
-- `MAIL_TO`: e-mail destinatário
-- `MAIL_FROM`: remetente exibido
-
-A mensagem inclui:
-
-- status final do pipeline
-- resultados de `test`, `build`, `docker` e `deploy`
-- resumo dos testes (total, aprovados, falhas, ignorados e duração)
-- resumo de cobertura (lines, statements, functions e branches)
-- branch, commit, ator e link da execução
-
-Artifacts utilizados no processo:
-
-- `test-reports`: contém `reports/junit.xml` e `coverage/**`
-- `email-content`: contém `subject.txt` e `pipeline-notification.html`
+- Cadastro, login, logout e autenticação de usuários.
+- Gerenciamento de perfil do usuário.
+- Criação, edição, exclusão, busca e entrada em bolões.
+- Convites para participação em bolões.
+- Listagem de jogos da Copa do Mundo.
+- Registro e atualização de palpites por jogo.
+- Cálculo e consulta de ranking dos participantes.
+- Atualização de jogos por job e script de seed.
