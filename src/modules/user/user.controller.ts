@@ -19,6 +19,17 @@ export class UserController {
 		return reply.status(200).send(user)
 	}
 
+	async search(request: FastifyRequest, reply: FastifyReply) {
+		const querySchema = z.object({
+			query: z.string().trim().min(2, 'Digite pelo menos 2 caracteres'),
+		})
+
+		const { query } = querySchema.parse(request.query)
+		const users = await this.userService.searchUsers(query, request.userId)
+
+		return reply.status(200).send(users)
+	}
+
 	async updateProfile(request: FastifyRequest, reply: FastifyReply) {
 		const bodySchema = z.object({
 			name: z.string().trim().min(1, 'O nome e obrigatorio'),

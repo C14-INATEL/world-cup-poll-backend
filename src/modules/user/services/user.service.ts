@@ -30,6 +30,10 @@ export class UserService {
 		return await this.userRepository.findById(id)
 	}
 
+	async searchUsers(query: string, currentUserId: string) {
+		return await this.userRepository.search(query, currentUserId)
+	}
+
 	async updateProfile(id: string, data: { name: string; email: string }) {
 		const user = await this.userRepository.updateProfile(id, data)
 

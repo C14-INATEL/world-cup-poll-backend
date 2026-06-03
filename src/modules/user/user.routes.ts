@@ -13,5 +13,6 @@ export async function UserRoutes(
 	app.addHook('preHandler', authMiddleware)
 
 	app.get('/me', userController.getProfile.bind(userController))
+	app.get('/users/search', userController.search.bind(userController))
 	app.patch('/me', userController.updateProfile.bind(userController))
 }
