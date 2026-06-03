@@ -13,6 +13,16 @@ export class InviteService {
 	) {}
 
 	async create(data: Omit<InviteInsert, 'expiresAt'>) {
+		const participantAlreadyExists =
+			await this.participantRepository.findByUserIdAndPollId(
+				data.invitedUserId,
+				data.pollId,
+			)
+
+		if (participantAlreadyExists) {
+			throw new BadRequestError('UsuÃ¡rio jÃ¡ participa deste grupo')
+		}
+
 		const userAlreadyInvited = await this.inviteRepository.findExistentInvite(
 			data.invitedUserId,
 			data.pollId,

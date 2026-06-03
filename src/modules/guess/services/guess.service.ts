@@ -205,6 +205,8 @@ export class GuessService {
 				secondTeamName: row.gameSecondTeamName,
 				firstTeamCountryCode: row.gameFirstTeamCountryCode,
 				secondTeamCountryCode: row.gameSecondTeamCountryCode,
+				firstTeamGoals: row.gameFirstTeamGoals,
+				secondTeamGoals: row.gameSecondTeamGoals,
 			},
 			result: {
 				status,
