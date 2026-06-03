@@ -1,21 +1,33 @@
+volumes:
+  db_data:
+
 services:
-  app:
-    image: joaolucenalima/world-cup-poll-backend:latest
+  backend:
+    build:
+      context: .
     container_name: world-cup-poll-backend
     restart: always
     environment:
-      NODE_ENV: production
-      PORT: ${PORT}
+      PORT: ${PORT:-3333}
       FRONTEND_URL: ${FRONTEND_URL}
-      FOOTBALL_API_KEY: ${FOOTBALL_API_KEY:?FOOTBALL_API_KEY is required}
-      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-example}@db:5432/${POSTGRES_DB:-database}
-      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      FOOTBALL_API_KEY: ${FOOTBALL_API_KEY:-change-me}
+      JWT_SECRET: ${JWT_SECRET:-change-me}
+      DATABASE_URL: ${DATABASE_URL:-postgres://postgres:example@database:5432/database}
     ports:
-      - "${PORT}:${PORT}"
+      - "${PORT:-3333}:${PORT:-3333}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://localhost:${PORT:-3333}/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""
+        ]
+      start_period: 20s
+      interval: 10s
+      timeout: 10s
+      retries: 5
     depends_on:
       db:
         condition: service_healthy
-    mem_limit: 300m
 
   db:
     image: postgres:16.9-alpine3.22
@@ -32,22 +44,3 @@ services:
       interval: 60s
       timeout: 5s
       retries: 5
-    mem_limit: 400m
-
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    restart: always
-    environment:
-      PORT: ${PORT}
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/templates/default.conf.template:ro
-    depends_on:
-      app:
-        condition: service_started
-    mem_limit: 100m
-
-volumes:
-  db_data:

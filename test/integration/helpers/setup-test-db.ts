@@ -4,7 +4,7 @@ import {
 } from '@testcontainers/postgresql'
 import { Pool } from 'pg'
 import { AppDb, createDb } from '@/infrastructure/db'
-import { runMigrations } from '@/infrastructure/db/migrate'
+import { runMigrations } from '@/infrastructure/db/migrations'
 
 export let postgresContainer: StartedPostgreSqlContainer
 let testDb: AppDb

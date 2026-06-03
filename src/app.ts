@@ -48,8 +48,8 @@ const buildApp = (db: AppDb) => {
 
 	app.decorateRequest('userId', '')
 
-	app.get('/', (_, reply) => {
-		return reply.send({ message: 'Hello World' })
+	app.get('/health', (_, reply) => {
+		return reply.send({ message: 'server ok' })
 	})
 
 	app.register(AuthRoutes, { prefix: '/auth', db })

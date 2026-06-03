@@ -1,13 +1,17 @@
+import { Pool } from 'pg'
 import { env } from '@/config/env'
 import logger from '@/config/logger'
 import { createDb } from '@/infrastructure/db'
 import { getAllMatchesFromApiJob } from '@/infrastructure/jobs/get-games.job'
 
 async function main() {
+	let dbPool: Pool | null = null
+
 	logger.info('[SEED] Starting games seed by calling getAllMatchesFromApiJob')
 
 	try {
-		const { db } = createDb(env.DATABASE_URL)
+		const { db, pool } = createDb(env.DATABASE_URL)
+		dbPool = pool
 		await getAllMatchesFromApiJob(db)
 		logger.info('[SEED] Games seed finished successfully')
 	} catch (error) {
@@ -16,7 +20,11 @@ async function main() {
 			error: (error as Error).message,
 			stack: (error as Error).stack,
 		})
-		process.exitCode = 1
+		process.exit(1)
+	} finally {
+		if (dbPool) {
+			await dbPool.end()
+		}
 	}
 }
 
