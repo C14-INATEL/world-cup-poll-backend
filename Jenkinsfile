@@ -1,28 +1,82 @@
 pipeline {
   agent any
 
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+  }
+
   environment {
-    IMAGE_NAME   = 'world-cup-poll-backend:latest'
+    NODE_VERSION = '22.12.0'
+    CI = 'true'
+    IMAGE_NAME = 'world-cup-poll-backend:latest'
     COMPOSE_FILE = '/home/ubuntu/projeto-c14/docker-compose.yml'
   }
 
-  stage('Build image') {
-    steps {
-      sh 'docker build -t world-cup-poll-backend:latest .'
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
     }
-  }
 
-  stage('Deploy') {
-    when { branch 'main' }
-    steps {
-      sh """
-        docker compose -f ${COMPOSE_FILE} up -d --no-deps backend
-      """
+    stage('Install') {
+      steps {
+        sh '''
+          set -euo pipefail
+          npm ci
+        '''
+      }
+    }
+
+    stage('Typecheck') {
+      steps {
+        sh '''
+          set -euo pipefail
+          npx tsc -p tsconfig.build.json
+        '''
+      }
+    }
+
+    stage('Test') {
+      steps {
+        sh '''
+          set -euo pipefail
+          npm run coverage
+        '''
+      }
+    }
+
+    stage('Build') {
+      steps {
+        sh '''
+          set -euo pipefail
+          npm run build
+          docker build -t "${IMAGE_NAME}" .
+        '''
+      }
+    }
+
+    stage('Deploy') {
+      when {
+        branch 'main'
+      }
+      steps {
+        sh '''
+          set -euo pipefail
+          docker compose -f "${COMPOSE_FILE}" up -d --no-deps backend
+        '''
+      }
     }
   }
 
   post {
     always {
+      archiveArtifacts(
+        artifacts: 'coverage/**',
+        fingerprint: true,
+        allowEmptyArchive: true
+      )
       cleanWs()
     }
   }
