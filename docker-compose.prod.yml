@@ -21,7 +21,9 @@ services:
       - world-cup-poll-network
 
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: ./jenkins
+      dockerfile: Dockerfile
     container_name: jenkins
     environment:
       - JENKINS_OPTS=--prefix=/jenkins
@@ -32,12 +34,11 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-    mem_limit: 512m
     networks:
       - world-cup-poll-network
 
   backend:
-    image: world-cup-poll-backend:latest
+    image: joaolucenalima/world-cup-poll-backend:latest
     container_name: world-cup-poll-backend
     restart: unless-stopped
     environment:
