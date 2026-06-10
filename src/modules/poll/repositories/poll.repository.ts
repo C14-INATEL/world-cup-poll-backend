@@ -1,6 +1,8 @@
-import { and, eq, exists, isNotNull, or, sql } from 'drizzle-orm'
+import { and, count, eq, exists, isNotNull, or, sql } from 'drizzle-orm'
 import type { AppDb } from '@/infrastructure/db'
 import {
+	guessTable,
+	inviteTable,
 	PollInsert,
 	participantTable,
 	pollTable,
@@ -81,11 +83,25 @@ export class PollRepository implements PollRepositoryInterface {
 	}
 
 	async delete(id: string) {
+		return this.db.transaction(async (trx) => {
+			await trx.delete(inviteTable).where(eq(inviteTable.pollId, id))
+			await trx.delete(participantTable).where(eq(participantTable.pollId, id))
+
+			return trx
+				.delete(pollTable)
+				.where(eq(pollTable.id, id))
+				.returning()
+				.then((res) => res[0])
+		})
+	}
+
+	async countGuessesByPollId(id: string) {
 		return this.db
-			.delete(pollTable)
-			.where(eq(pollTable.id, id))
-			.returning()
-			.then((res) => res[0])
+			.select({ total: count() })
+			.from(guessTable)
+			.innerJoin(participantTable, eq(guessTable.participantId, participantTable.id))
+			.where(eq(participantTable.pollId, id))
+			.then((res) => res[0]?.total ?? 0)
 	}
 
 	async findAllByUserId(userId: string) {

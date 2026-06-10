@@ -336,6 +336,7 @@ describe('PollService', () => {
 
 			const pollRepository = {
 				findById: vi.fn().mockResolvedValue(poll),
+				countGuessesByPollId: vi.fn().mockResolvedValue(0),
 				delete: vi.fn().mockResolvedValue(poll),
 			}
 
@@ -343,7 +344,26 @@ describe('PollService', () => {
 
 			await service.delete('poll-1', 'user-1')
 
+			expect(pollRepository.countGuessesByPollId).toHaveBeenCalledWith('poll-1')
 			expect(pollRepository.delete).toHaveBeenCalledWith('poll-1')
+		})
+
+		test('deve lançar BadRequestError se o bolão possui palpites', async () => {
+			const poll = makePoll({ id: 'poll-1', ownerId: 'user-1' })
+
+			const pollRepository = {
+				findById: vi.fn().mockResolvedValue(poll),
+				countGuessesByPollId: vi.fn().mockResolvedValue(1),
+				delete: vi.fn(),
+			}
+
+			const service = new PollService(pollRepository as any, {} as any)
+
+			await expect(service.delete('poll-1', 'user-1')).rejects.toThrow(
+				'Não é possível excluir bolão com palpites',
+			)
+
+			expect(pollRepository.delete).not.toHaveBeenCalled()
 		})
 
 		test('deve verificar o bolão pelo id correto antes de excluir', async () => {
@@ -351,6 +371,7 @@ describe('PollService', () => {
 
 			const pollRepository = {
 				findById: vi.fn().mockResolvedValue(poll),
+				countGuessesByPollId: vi.fn().mockResolvedValue(0),
 				delete: vi.fn().mockResolvedValue(poll),
 			}
 

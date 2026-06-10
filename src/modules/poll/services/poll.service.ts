@@ -93,6 +93,12 @@ export class PollService {
 			throw new UnauthorizedError('Apenas o dono pode excluir o bolão')
 		}
 
+		const guessesCount = await this.pollRepository.countGuessesByPollId(id)
+
+		if (guessesCount > 0) {
+			throw new BadRequestError('Não é possível excluir bolão com palpites')
+		}
+
 		return this.pollRepository.delete(id)
 	}
 }
