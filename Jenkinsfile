@@ -63,7 +63,9 @@ pipeline {
 
     stage('Deploy') {
       when {
-        branch 'main'
+          expression {
+              env.GIT_BRANCH == 'origin/main'
+          }
       }
       steps {
         sh '''
@@ -75,6 +77,9 @@ pipeline {
   }
 
   post {
+    failure {
+      echo 'Pipeline failed!'
+    }
     always {
       archiveArtifacts(
         artifacts: 'coverage/**',
