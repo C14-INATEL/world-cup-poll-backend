@@ -6,6 +6,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.build.json && tsc-alias",
     "start": "node ./dist/src/server.js",
+    "migrate": "tsx src/scripts/migrate.ts",
     "format": "biome check . --fix",
     "format:check": "biome check .",
     "generate-migration": "drizzle-kit generate --name",
