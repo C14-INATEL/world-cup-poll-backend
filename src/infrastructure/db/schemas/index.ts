@@ -1,5 +1,6 @@
 export * from './game'
 export * from './guess'
+export * from './invite'
 export * from './participant'
 export * from './poll'
 export * from './user'
