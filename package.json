@@ -14,7 +14,7 @@
     "seed:games": "tsx src/scripts/seed-games.ts",
     "seed:dev": "tsx src/scripts/seed-dev.ts",
     "test": "vitest run",
-    "coverage": "vitest run --coverage",
+    "coverage": "vitest run --coverage --reporter=default --reporter=junit --outputFile.junit=./coverage/junit.xml",
     "prepare": "husky"
   },
   "author": "joaolucenalima",
