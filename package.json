@@ -14,7 +14,7 @@
     "seed:games": "tsx src/scripts/seed-games.ts",
     "seed:dev": "tsx src/scripts/seed-dev.ts",
     "test": "vitest run",
-    "coverage": "vitest run --coverage --reporter=default --reporter=junit --outputFile.junit=./coverage/junit.xml",
+    "coverage": "vitest run --coverage --reporter=default --reporter=junit --outputFile.junit=./coverage/junit.xml && npx xunit-viewer --results=./coverage/junit.xml --output=./coverage/test-report.html",
     "prepare": "husky"
   },
   "author": "joaolucenalima",
@@ -46,6 +46,7 @@
     "tsc-alias": "1.8.16",
     "tsx": "4.19.0",
     "typescript": "5.9.3",
-    "vitest": "4.1.2"
+    "vitest": "4.1.2",
+    "xunit-viewer": "9.0.0"
   }
 }

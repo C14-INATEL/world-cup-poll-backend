@@ -43,12 +43,21 @@ pipeline {
       post{
         always{
           junit(testResults: 'coverage/junit.xml', allowEmptyResults: true)
+
+          publishHTML(target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : 'coverage',
+            reportFiles          : 'test-report.html', // ← relatório de testes
+            reportName           : 'Test Report'])
+
           publishHTML(target: [
             allowMissing: true, 
             alwaysLinkToLastBuild: true, 
             keepAll: true, 
             reportDir: 'coverage', 
-            reportFiles: 'index.html', 
+            reportFiles: 'coverage-report.html', 
             reportName: 'Coverage Report'])
         }
       }
