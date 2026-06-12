@@ -98,7 +98,7 @@ pipeline {
       echo 'Pipeline failed!'
       script {
         if (env.NOTIFICATION_EMAILS?.trim()) {
-          def testSummary = 'Test summary unavailable: coverage/junit.xml was not generated.'
+          def testSummary = 'Test summary unavailable: coverage/junit.xml was not found. Tests may not have run, or Vitest may have failed before writing the JUnit report.'
 
           if (fileExists('coverage/junit.xml')) {
             def junitXml = readFile('coverage/junit.xml')
@@ -161,6 +161,8 @@ Check the Jenkins console output and test reports for details.
         fingerprint: true,
         allowEmptyArchive: true
       )
+    }
+    cleanup {
       cleanWs()
     }
   }
