@@ -1,13 +1,20 @@
 #!/bin/sh
-set -e
 
 echo "Running database migrations..."
-npm run migrate:prod
-echo "Migration OK"
+if npm run migrate:prod; then
+  echo "Migration OK"
+else
+  echo "Migration FAILED with exit code $?"
+  exit 1
+fi
 
-echo "Running seed..."
-npm run seed:games
-echo "Seed OK"
+echo "Updating games..."
+if npm run update-games; then
+  echo "OK"
+else
+  echo "FAILED with exit code $?"
+  exit 1
+fi
 
 echo "Starting application..."
 exec npm start
