@@ -14,6 +14,10 @@
     "seed:dev": "tsx src/scripts/seed-dev.ts",
     "update-games": "node ./dist/src/scripts/update-games.js",
     "test": "vitest run",
+    "test:e2e": "vitest run test/e2e",
+    "test:unit": "vitest run test/unit",
+    "test:integration": "vitest run test/integration",
+    "test:all": "vitest run test/unit test/integration test/e2e",
     "coverage": "vitest run --coverage --reporter=default --reporter=junit --outputFile.junit=./coverage/junit.xml && npx xunit-viewer --results=./coverage/junit.xml --output=./coverage/test-report.html",
     "prepare": "husky"
   },
