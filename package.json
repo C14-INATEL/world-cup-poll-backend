@@ -47,6 +47,6 @@
     "tsx": "4.19.0",
     "typescript": "5.9.3",
     "vitest": "4.1.2",
-    "xunit-viewer": "9.0.0"
+    "xunit-viewer": "^9.0.0"
   }
 }
