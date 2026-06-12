@@ -40,6 +40,15 @@ pipeline {
           npx tsc -p tsconfig.build.json
         '''
       }
+    }
+
+    stage('Test') {
+      steps {
+        sh '''
+          set -euo pipefail
+          npm run coverage
+        '''
+      }
       post{
         always{
           junit(testResults: 'coverage/junit.xml', allowEmptyResults: true)
@@ -53,22 +62,13 @@ pipeline {
             reportName           : 'Test Report'])
 
           publishHTML(target: [
-            allowMissing: true, 
-            alwaysLinkToLastBuild: true, 
-            keepAll: true, 
-            reportDir: 'coverage', 
-            reportFiles: 'coverage-report.html', 
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'coverage',
+            reportFiles: 'index.html',
             reportName: 'Coverage Report'])
         }
-      }
-    }
-
-    stage('Test') {
-      steps {
-        sh '''
-          set -euo pipefail
-          npm run coverage
-        '''
       }
     }
 
