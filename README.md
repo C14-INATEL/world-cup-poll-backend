@@ -104,6 +104,54 @@ As demais operações da API seguem o mesmo padrão: envie os dados em JSON quan
 - Cálculo e consulta de ranking dos participantes.
 - Atualização de jogos por job e script de seed.
 
+## Metodologia de desenvolvimento
+
+O grupo adotou uma metodologia *híbrida, baseada em práticas do Scrum*.
+
+Foram utilizados ciclos curtos de desenvolvimento, definição de prioridades e acompanhamento das atividades. A organização das tarefas foi feita principalmente pelo *WhatsApp*, onde o grupo distribuía as responsabilidades e informava o andamento do projeto.
+
+Essa abordagem foi escolhida por ser simples e flexível, permitindo alterar prioridades e corrigir problemas durante o desenvolvimento.
+
+## Papéis do grupo
+
+* *João Vitor:* responsável pela organização das tarefas, definição das prioridades e desenvolvimento.
+* *Vinicius:* responsável pelo desenvolvimento das funcionalidades e correção de erros.
+* *José:* responsável pelo desenvolvimento das funcionalidades e correção de erros.
+* *Eduardo:* responsável pelos testes, validação das funcionalidades e apoio no desenvolvimento.
+
+Apesar dessa divisão, todos os integrantes colaboraram em diferentes partes do projeto.
+
+## Cadência e ferramentas
+
+O trabalho foi dividido em ciclos. O grupo definia as tarefas prioritárias e distribuía as atividades entre os integrantes.
+
+Durante a semana, eram realizadas reuniões curtas ou trocas de mensagens para acompanhar o andamento, identificar dificuldades e reorganizar as tarefas quando necessário.
+
+As principais ferramentas utilizadas foram:
+
+* *GitHub*, para versionamento do código, branches, commits e issues;
+* *WhatsApp*, para comunicação, distribuição e acompanhamento das tarefas.
+
+## Definição de pronto
+
+Uma tarefa era considerada pronta quando:
+
+* a funcionalidade estava implementada;
+* os testes haviam sido realizados;
+* os critérios definidos haviam sido atendidos;
+* o código estava integrado ao projeto;
+* a conclusão havia sido comunicada ao grupo.
+
+## Métricas
+
+O grupo acompanhou métricas simples, como:
+
+* quantidade de issues concluídas por ciclo;
+* quantidade de tarefas pendentes;
+* comparação entre tarefas planejadas e entregues.
+
+Essas informações ajudaram o grupo a identificar atrasos e melhorar a organização dos ciclos seguintes.
+
 ## Uso de IA
 
 Durante o desenvolvimento do backend, ferramentas de inteligência artificial foram usadas como apoio para acelerar tarefas de implementação, revisão, testes e documentação. As sugestões geradas foram analisadas pelo grupo antes de serem incorporadas ao projeto.
