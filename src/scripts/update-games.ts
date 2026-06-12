@@ -7,16 +7,16 @@ import { getAllMatchesFromApiJob } from "@/infrastructure/jobs/get-games.job";
 async function main() {
   let dbPool: Pool | null = null;
 
-  logger.info("[SEED] Starting games seed by calling getAllMatchesFromApiJob");
+  logger.info("[GAMES] Starting games update by calling getAllMatchesFromApiJob");
 
   try {
     const { db, pool } = createDb(env.DATABASE_URL);
     dbPool = pool;
     await getAllMatchesFromApiJob(db);
-    logger.info("[SEED] Games seed finished successfully");
+    logger.info("[GAMES] Games update finished successfully");
   } catch (error) {
     logger.error({
-      message: "[SEED] Games seed failed",
+      message: "[GAMES] Games update failed",
       error: (error as Error).message,
       stack: (error as Error).stack,
     });
@@ -30,7 +30,7 @@ async function main() {
 
 main().catch((error) => {
   logger.error({
-    message: "[SEED] Games seed failed (unhandled)",
+    message: "[GAMES] Games update failed (unhandled)",
     error: (error as Error).message,
     stack: (error as Error).stack,
   });
